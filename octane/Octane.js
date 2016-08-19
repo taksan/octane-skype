@@ -8,8 +8,6 @@ var octaneWindow = null;
 OctaneSkype = {
 	initialize : function() {
 		if (initialized) return;
-
-		trayIcon.initialize(OctaneSkype)
 		initialized = true;
 
 		octaneWindow = new BrowserWindow({width: 1024,
@@ -18,12 +16,30 @@ OctaneSkype = {
 			icon: app.getAppPath() + '/assets/skype-icon.png'
 		});
 
+		trayIcon.initialize(OctaneSkype)
+		OctaneSkype.changeQuitToHide();
+
 		octaneWindow.on('closed', () => octaneWindow = null);
 		octaneWindow.on('show',   () => octaneWindow.focus());
 		octaneWindow.on('focus',  () => OctaneSkype.sendIpc("main-window-focused"));
 		octaneWindow.webContents.on('will-navigate', (ev) => ev.preventDefault());
 
-		octaneWindow.loadURL(`file://${__dirname}/../views/index.html`)
+		octaneWindow.loadURL(`file://${__dirname}/../views/index.html`);
+	},
+
+	changeQuitToHide: function() {
+		var isQuiting = false;
+
+		app.on('before-quit', function() {
+			isQuiting = true;
+		});
+
+		octaneWindow.on('close', function(event) {
+			if (isQuiting)
+				return;
+			event.preventDefault();
+			OctaneSkype.hide();
+		});
 	},
 
 	sendIpc : function() {
