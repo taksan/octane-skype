@@ -25,5 +25,9 @@
   "homepage": "https://github.com/taksan/octane#readme",
   "devDependencies": {
     "electron-prebuilt": "1.2.6"
+  },
+  "dependencies": {
+    "stylus": "^0.54.5",
+    "canvas": "1.4.0"
   }
 }

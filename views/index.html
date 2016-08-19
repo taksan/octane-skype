@@ -13,6 +13,7 @@
 		</style>
 	</head>
 	<body>
-		<webview id="skype-view" src="https://web.skype.com/" partition="persist:octane"/>
+		<webview id="skype-view" src="https://web.skype.com/" preload="./skype-preload.js" partition="persist:octane"/>
 	</body>	
+	<script>require('./webview.js')</script>
 </html>

@@ -3,5 +3,5 @@ const app      = electron.app;
 const octane   = require('./Octane');
 
 app.on('ready', function() {
-	octane.createWindow();
+	octane.initialize();
 });
