@@ -22,7 +22,6 @@ skypeView.addEventListener('ipc-message', (event) => {
             octaneApp.setNotificationCount(event.args);
             break;
         case 'focus':
-            console.log("FOCUS ------------ ")
             octaneApp.show();
             break;
     }

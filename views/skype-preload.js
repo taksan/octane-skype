@@ -24,8 +24,6 @@ ipc.on('main-window-loaded', function () {
     var sidebar = document.querySelector("swx-sidebar");
     if (!sidebar) return;
 
-    console.log('main-window-loaded');
-
     var observer = new MutationObserver(() => updateNotificationCount());
     observer.observe(sidebar, {subtree: true, childList: true});
 
