@@ -3,14 +3,14 @@ const app      = electron.app;
 const octane   = require('./Octane');
 
 const shouldQuit = app.makeSingleInstance(() => {
-	octane.show();
+    octane.show();
 });
 
 if (shouldQuit) {
-	app.quit();
-	return;
+    app.quit();
+    return;
 }
 
 app.on('ready', function() {
-	octane.initialize();
+    octane.initialize();
 });

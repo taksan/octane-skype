@@ -10,8 +10,8 @@ var octaneWindow = null;
 var settingsFile = path.join(electron.app.getPath('userData'), 'settings.json');
 
 OctaneSkype = {
-	initialize : function() {
-		if (initialized) return;
+    initialize : function() {
+        if (initialized) return;
 
         this.loadSettings();
 
@@ -23,77 +23,77 @@ OctaneSkype = {
         console.log(this._settings.window)
         console.log(settingsFile);
 
-		octaneWindow = new BrowserWindow(options);
+        octaneWindow = new BrowserWindow(options);
 
-		trayIcon.initialize(OctaneSkype);
-		OctaneSkype.changeQuitToHide();
+        trayIcon.initialize(OctaneSkype);
+        OctaneSkype.changeQuitToHide();
 
-		octaneWindow.on('closed', () => octaneWindow = null);
-		octaneWindow.on('show',   () => octaneWindow.focus());
-		octaneWindow.on('focus',  () => OctaneSkype.sendIpc("main-window-focused"));
-		octaneWindow.on('resize', () => OctaneSkype.updateSettingsSize());
+        octaneWindow.on('closed', () => octaneWindow = null);
+        octaneWindow.on('show',   () => octaneWindow.focus());
+        octaneWindow.on('focus',  () => OctaneSkype.sendIpc("main-window-focused"));
+        octaneWindow.on('resize', () => OctaneSkype.updateSettingsSize());
 
-		octaneWindow.webContents.on('will-navigate', (ev) => ev.preventDefault());
+        octaneWindow.webContents.on('will-navigate', (ev) => ev.preventDefault());
 
-		octaneWindow.loadURL(`file://${__dirname}/../views/index.html`);
+        octaneWindow.loadURL(`file://${__dirname}/../views/index.html`);
 
         initialized = true;
-	},
+    },
 
-	changeQuitToHide: function() {
-		var isQuiting = false;
+    changeQuitToHide: function() {
+        var isQuiting = false;
 
-		app.on('before-quit', function() {
-			isQuiting = true;
-		});
+        app.on('before-quit', function() {
+            isQuiting = true;
+        });
 
-		octaneWindow.on('close', function(event) {
+        octaneWindow.on('close', function(event) {
             OctaneSkype.saveSettings();
-			if (isQuiting) {
+            if (isQuiting) {
                 return;
             }
-			event.preventDefault();
-			OctaneSkype.hide();
-		});
-	},
+            event.preventDefault();
+            OctaneSkype.hide();
+        });
+    },
 
-	sendIpc : function() {
-		var webContents = octaneWindow.webContents;
-		webContents.send.apply(webContents, arguments);
-	},
+    sendIpc : function() {
+        var webContents = octaneWindow.webContents;
+        webContents.send.apply(webContents, arguments);
+    },
 
-	toggleOpen : function() {
-		if (OctaneSkype.isVisible())
-			OctaneSkype.hide();
-		else
-			OctaneSkype.show();
+    toggleOpen : function() {
+        if (OctaneSkype.isVisible())
+            OctaneSkype.hide();
+        else
+            OctaneSkype.show();
 
-	},
+    },
 
-	isVisible : function() {
-		return octaneWindow.isVisible();
-	},
+    isVisible : function() {
+        return octaneWindow.isVisible();
+    },
 
-	hide : function() {
-		octaneWindow.hide();
-	},
+    hide : function() {
+        octaneWindow.hide();
+    },
 
-	show : function() {
-		octaneWindow.show();
-		octaneWindow.focus();
-	},
+    show : function() {
+        octaneWindow.show();
+        octaneWindow.focus();
+    },
 
-	statusChange : function(status) {
-		octaneWindow.webContents.send("status-change", status)
-	},
+    statusChange : function(status) {
+        octaneWindow.webContents.send("status-change", status)
+    },
 
-	setNotificationCount : function(count) {
-		trayIcon.setNotificationCount(count);
-	},
+    setNotificationCount : function(count) {
+        trayIcon.setNotificationCount(count);
+    },
 
-	settings: function() {
-		return this._settings;
-	},
+    settings: function() {
+        return this._settings;
+    },
 
     updateSettingsSize: function() {
         Object.assign(this._settings.window, octaneWindow.getBounds())

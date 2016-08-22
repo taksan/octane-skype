@@ -5,8 +5,8 @@ var octaneApp = electron.remote.require('../octane/Octane');
 var skypeView = document.getElementById('skype-view');
 
 skypeView.addEventListener('did-navigate', () => {
-	if (octaneApp.settings().Theme)
-		themes.load(skypeView, octaneApp.settings().Theme);
+    if (octaneApp.settings().Theme)
+        themes.load(skypeView, octaneApp.settings().Theme);
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {
@@ -17,22 +17,22 @@ skypeView.addEventListener('did-stop-loading', (e) => {
 });
 
 skypeView.addEventListener('ipc-message', (event) => {
-	switch(event.channel){
-		case 'unseen-chat-changed':
-			octaneApp.setNotificationCount(event.args);
-			break;
+    switch(event.channel){
+        case 'unseen-chat-changed':
+            octaneApp.setNotificationCount(event.args);
+            break;
         case 'focus':
             console.log("FOCUS ------------ ")
             octaneApp.show();
             break;
-	}
+    }
 });
 
 electron.ipcRenderer.on('main-window-focused', () => {
-	skypeView.focus();
-	skypeView.send('main-window-focused', null);
+    skypeView.focus();
+    skypeView.send('main-window-focused', null);
 });
 
 skypeView.addEventListener('console-message', (e) =>
-	console.log('Guest page logged a message:', e.message)
+    console.log('Guest page logged a message:', e.message)
 );
