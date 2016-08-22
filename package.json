@@ -4,7 +4,7 @@
   "productName": "Octane-Skype",
   "description": "Web Skype With Addons Support. Tray + Highlight + Search",
   "private": true,
-  "main": "octane/main.js",
+  "main": "octane/bootstrap.js",
   "scripts": {
     "start": "electron ."
   },
