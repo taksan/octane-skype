@@ -1,30 +1,43 @@
-const electron = require('electron')
+const electron      = require('electron')
+const trayIcon      = require('./trayIcon');
+const path          = require('path');
+const fs            = require('fs');
 const BrowserWindow = electron.BrowserWindow
-const app = electron.app;
-const trayIcon = require('./trayIcon');
+const app           = electron.app;
 
 var initialized   = false;
 var octaneWindow = null;
+var settingsFile = path.join(electron.app.getPath('userData'), 'settings.json');
+
 OctaneSkype = {
 	initialize : function() {
 		if (initialized) return;
-		initialized = true;
 
-		octaneWindow = new BrowserWindow({width: 1024,
-			height: 768,
-			autoHideMenuBar: true,
-			icon: app.getAppPath() + '/assets/skype-icon.png'
-		});
+        this.loadSettings();
 
-		trayIcon.initialize(OctaneSkype)
+        var options = {
+            autoHideMenuBar: true,
+            icon: app.getAppPath() + '/assets/skype-icon.png'
+        };
+        Object.assign(options, this._settings.window);
+        console.log(this._settings.window)
+        console.log(settingsFile);
+
+		octaneWindow = new BrowserWindow(options);
+
+		trayIcon.initialize(OctaneSkype);
 		OctaneSkype.changeQuitToHide();
 
 		octaneWindow.on('closed', () => octaneWindow = null);
 		octaneWindow.on('show',   () => octaneWindow.focus());
 		octaneWindow.on('focus',  () => OctaneSkype.sendIpc("main-window-focused"));
+		octaneWindow.on('resize', () => OctaneSkype.updateSettingsSize());
+
 		octaneWindow.webContents.on('will-navigate', (ev) => ev.preventDefault());
 
 		octaneWindow.loadURL(`file://${__dirname}/../views/index.html`);
+
+        initialized = true;
 	},
 
 	changeQuitToHide: function() {
@@ -35,8 +48,10 @@ OctaneSkype = {
 		});
 
 		octaneWindow.on('close', function(event) {
-			if (isQuiting)
-				return;
+            OctaneSkype.saveSettings();
+			if (isQuiting) {
+                return;
+            }
 			event.preventDefault();
 			OctaneSkype.hide();
 		});
@@ -77,10 +92,36 @@ OctaneSkype = {
 	},
 
 	settings: function() {
-		return {
-			Theme: "dark-compact"
-		}
-	}
+		return this._settings;
+	},
+
+    updateSettingsSize: function() {
+        Object.assign(this._settings.window, octaneWindow.getBounds())
+    },
+
+    loadSettings: function() {
+        this._settings = {
+            window: {
+                width: 1024,
+                height: 768
+            },
+            Theme: "dark-compact"
+        };
+        Object.assign(this._settings , JSON.parse(fs.readFileSync(settingsFile)));
+    },
+
+    saveSettings: function() {
+        let data = JSON.stringify(this._settings, null, "  ");
+        let tmpFile = settingsFile + '.tmp';
+
+        fs.writeFile(tmpFile, data, (err) => {
+            if (err) throw err;
+
+            fs.rename(tmpFile, settingsFile, (err) => {
+                if (err) throw err;
+            });
+        });
+    }
 }
 
 module.exports = OctaneSkype

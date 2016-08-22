@@ -9,8 +9,6 @@ window.focus = function() {
     previousFocus.apply(this, arguments)
 }
 
-window.Notification = ExtendedNotification;
-
 function updateNotificationCount() {
     var unreadCount = document.querySelectorAll(".unseenNotifications").length;
     ipc.sendToHost('unseen-chat-changed', unreadCount);
@@ -30,4 +28,19 @@ ipc.on('main-window-loaded', function () {
 
     var observer = new MutationObserver(() => updateNotificationCount());
     observer.observe(sidebar, {subtree: true, childList: true});
+
+
+    var isIdle = true;
+    function refreshIfIdle() {
+        if (isIdle)
+            window.location = window.location;
+        isIdle = false;
+    }
+    var idleRefresh = setInterval(refreshIfIdle, 300000/*5 minutes*/);
+
+    $(window).on('mousemove input', function() {
+        isIdle = false;
+        clearInterval(idleRefresh);
+        idleRefresh = setInterval(refreshIfIdle, 300000/*5 minutes*/);
+    });
 });
