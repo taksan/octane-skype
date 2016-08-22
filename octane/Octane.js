@@ -20,8 +20,6 @@ OctaneSkype = {
             icon: app.getAppPath() + '/assets/skype-icon.png'
         };
         Object.assign(options, this._settings.window);
-        console.log(this._settings.window)
-        console.log(settingsFile);
 
         octaneWindow = new BrowserWindow(options);
 
@@ -125,4 +123,3 @@ OctaneSkype = {
 }
 
 module.exports = OctaneSkype
-

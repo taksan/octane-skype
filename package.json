@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "stylus": "^0.54.5",
-    "canvas": "1.4.0"
+    "canvas": "1.4.0",
+    "jquery": "2.2.3"
   }
 }

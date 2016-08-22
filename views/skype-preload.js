@@ -20,25 +20,15 @@ ipc.on('main-window-focused', function () {
         window.document.querySelector("textarea").focus();
 });
 
-ipc.on('main-window-loaded', function () {
+ipc.on('main-window-loaded', function (event, addOnList) {
     var sidebar = document.querySelector("swx-sidebar");
     if (!sidebar) return;
 
     var observer = new MutationObserver(() => updateNotificationCount());
     observer.observe(sidebar, {subtree: true, childList: true});
 
-
-    var isIdle = true;
-    function refreshIfIdle() {
-        if (isIdle)
-            window.location = window.location;
-        isIdle = false;
-    }
-    var idleRefresh = setInterval(refreshIfIdle, 300000/*5 minutes*/);
-
-    $(window).on('mousemove input', function() {
-        isIdle = false;
-        clearInterval(idleRefresh);
-        idleRefresh = setInterval(refreshIfIdle, 300000/*5 minutes*/);
-    });
+    addOnList.forEach(function (addOn) {
+        console.log(addOn);
+        require(addOn).initUi();
+    })
 });
