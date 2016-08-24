@@ -1,8 +1,8 @@
-const electron      = require('electron')
+const electron      = require('electron');
 const trayIcon      = require('./trayIcon');
 const path          = require('path');
 const fs            = require('fs');
-const BrowserWindow = electron.BrowserWindow
+const BrowserWindow = electron.BrowserWindow;
 const app           = electron.app;
 
 var initialized   = false;
@@ -118,6 +118,6 @@ OctaneSkype = {
         fs.writeFileSync(tmpFile, data);
         fs.renameSync(tmpFile, settingsFile);
     }
-}
+};
 
-module.exports = OctaneSkype
+module.exports = OctaneSkype;

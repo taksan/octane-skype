@@ -3,11 +3,11 @@
 const ipc = require('electron').ipcRenderer;
 
 // this is a hack that makes the window raise, because skype's notification onclick invoke window.focus
-var previousFocus = window.focus
+var previousFocus = window.focus;
 window.focus = function() {
     ipc.sendToHost('focus');
     previousFocus.apply(this, arguments)
-}
+};
 
 function updateNotificationCount() {
     var unreadCount = document.querySelectorAll(".unseenNotifications").length;
@@ -31,7 +31,7 @@ ipc.on('main-window-loaded', function (event, addOnList) {
         try {
             require(addOn).initUi();
         } catch (err) {
-            console.error("Failed to load addon : " + addOn)
+            console.error("Failed to load addon : " + addOn);
             console.error(err);
         }
     })

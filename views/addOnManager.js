@@ -3,17 +3,17 @@ const path   = require('path');
 
 var addOns = [];
 module.exports.initialize = function () {
-    let addonsFolder = path.join(__dirname, '..', 'addons');
-    fs.readdirSync(addonsFolder).forEach(function (addonOnPackage) {
-        let packageFolder = path.join(addonsFolder, addonOnPackage);
+    let addOnsFolder = path.join(__dirname, '..', 'addons');
+    fs.readdirSync(addOnsFolder).forEach(function (addonOnPackage) {
+        let packageFolder = path.join(addOnsFolder, addonOnPackage);
         fs.readdirSync(packageFolder).forEach(function (addOn) {
             if (!addOn.endsWith("-addon.js"))
                 return;
-            var addonPath = path.join(__dirname, '..', 'addons/' + addonOnPackage, addOn);
+            var addOnPath = path.join(__dirname, '..', 'addons/' + addonOnPackage, addOn);
             try {
-                addOns[addonPath] = require(addonPath);
+                addOns[addOnPath] = require(addOnPath);
             }catch (err) {
-                console.error("Failed to load: " + addonPath);
+                console.error("Failed to load: " + addOnPath);
                 console.error(err);
             }
         });
@@ -34,10 +34,10 @@ module.exports.loadAddonsCss = function(webview, theme) {
 };
 
 module.exports.getNames = function() {
-    var addonFiles = [];
-    for(var addonFile in addOns)
-        addonFiles.push(addonFile)
-    return addonFiles;
+    var addOnFiles = [];
+    for(var addOnFile in addOns)
+        addOnFiles.push(addOnFile)
+    return addOnFiles;
 };
 
 function loadCss(webview, addOn, cssFileName) {

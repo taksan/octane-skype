@@ -5,7 +5,7 @@ const refreshInterval = 300000;
 
 module.exports.addonName = function () {
     return "keepalive-addon";
-}
+};
 
 module.exports.initUi = function () {
     if (isInitialized) return;
@@ -26,4 +26,4 @@ module.exports.initUi = function () {
         clearInterval(idleRefresh);
         idleRefresh = setInterval(refreshIfIdle, refreshInterval);
     });
-}
+};

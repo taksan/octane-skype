@@ -1,8 +1,7 @@
 const electron      = require('electron');
 const Canvas        = require('canvas');
 const path          = require('path');
-const fs            = require('fs')
-const app           = electron.app;
+const fs            = require('fs');
 
 const nativeImage   = electron.nativeImage;
 let trayIcon        = null;
@@ -32,12 +31,12 @@ exports.setNotificationCount = function(count) {
 
     drawTrayIcon(count);
     lastCount = count;
-}
+};
 
 function drawTrayIcon(count)
 {
-    var canvas = new Canvas(24, 24)
-    var ctx = canvas.getContext('2d')
+    var canvas = new Canvas(24, 24);
+    var ctx = canvas.getContext('2d');
 
     ctx.drawImage(logo, 0, 0, logo.width, logo.height);
     if (count != 0)
@@ -64,8 +63,8 @@ function drawTrayIconMessageCount(ctx, count)
     ctx.strokeStyle='#ffb31a';
     ctx.stroke();
     ctx.font = fontSize+'px Colibri';
-    ctx.fillStyle = 'black'
-    var tsize = ctx.measureText(count).width
+    ctx.fillStyle = 'black';
+    var tsize = ctx.measureText(count).width;
     ctx.fillText(count, 18-tsize/2, yPos);
 }
 
