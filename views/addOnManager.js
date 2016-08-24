@@ -10,10 +10,15 @@ module.exports.initialize = function () {
             if (!addOn.endsWith("-addon.js"))
                 return;
             var addonPath = path.join(__dirname, '..', 'addons/' + addonOnPackage, addOn);
-            addOns[addonPath] = require(addonPath);
+            try {
+                addOns[addonPath] = require(addonPath);
+            }catch (err) {
+                console.error("Failed to load: " + addonPath);
+                console.error(err);
+            }
         });
     });
-}
+};
 
 module.exports.loadAddonsCss = function(webview, theme) {
     for (var addonFile in addOns) {
@@ -26,14 +31,14 @@ module.exports.loadAddonsCss = function(webview, theme) {
             loadCss(webview, addon, cssFullPath);
         });
     }
-}
+};
 
 module.exports.getNames = function() {
     var addonFiles = [];
     for(var addonFile in addOns)
         addonFiles.push(addonFile)
     return addonFiles;
-}
+};
 
 function loadCss(webview, addOn, cssFileName) {
     fs.readFile(cssFileName, 'utf8', function (err, cssFile) {

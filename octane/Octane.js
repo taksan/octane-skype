@@ -105,6 +105,9 @@ OctaneSkype = {
             },
             Theme: "dark-compact"
         };
+        if (!fs.existsSync(settingsFile))
+            this.saveSettings();
+
         Object.assign(this._settings , JSON.parse(fs.readFileSync(settingsFile)));
     },
 
@@ -112,13 +115,8 @@ OctaneSkype = {
         let data = JSON.stringify(this._settings, null, "  ");
         let tmpFile = settingsFile + '.tmp';
 
-        fs.writeFile(tmpFile, data, (err) => {
-            if (err) throw err;
-
-            fs.rename(tmpFile, settingsFile, (err) => {
-                if (err) throw err;
-            });
-        });
+        fs.writeFileSync(tmpFile, data);
+        fs.renameSync(tmpFile, settingsFile);
     }
 }
 

@@ -13,7 +13,7 @@ let logo            = null;
 
 exports.initialize = function(instance) {
     octaneInstance = instance;
-    basePath   = app.getAppPath() + '/assets/tray/';
+    basePath   = __dirname + '/../assets/tray/';
 
     var logoData = fs.readFileSync(`${basePath}skype-online.png`);
     logo = new Canvas.Image;

@@ -1,3 +1,5 @@
+$ = require('../../node_modules/jquery/dist/jquery.min.js');
+
 var isInitialized = false;
 const refreshInterval = 300000;
 

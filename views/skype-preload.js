@@ -28,7 +28,11 @@ ipc.on('main-window-loaded', function (event, addOnList) {
     observer.observe(sidebar, {subtree: true, childList: true});
 
     addOnList.forEach(function (addOn) {
-        console.log(addOn);
-        require(addOn).initUi();
+        try {
+            require(addOn).initUi();
+        } catch (err) {
+            console.error("Failed to load addon : " + addOn)
+            console.error(err);
+        }
     })
 });

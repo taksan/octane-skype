@@ -1,22 +1,22 @@
 var electron  = require('electron');
 var themes    = require('./themeManager');
-var addons    = require('./addonManager');
+var addOns    = require('./addOnManager');
 var octaneApp = electron.remote.require('../octane/Octane');
 var skypeView = document.getElementById('skype-view');
 
-addons.initialize(skypeView);
+addOns.initialize(skypeView);
 
 skypeView.addEventListener('did-navigate', () => {
     var theme = octaneApp.settings().Theme;
     themes.load(skypeView, theme);
-    addons.loadAddonsCss(skypeView, theme);
+    addOns.loadAddonsCss(skypeView, theme);
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {
     if (!e.target.getURL().match(/https:\/\/web.skype.com\/.+\/.*/))
         return;
 
-    skypeView.send("main-window-loaded", addons.getNames());
+    skypeView.send("main-window-loaded", addOns.getNames());
 });
 
 skypeView.addEventListener('ipc-message', (event) => {
