@@ -36,3 +36,7 @@ ipc.on('main-window-loaded', function (event, addOnList) {
         }
     })
 });
+
+ipc.on('status-change', function(event, status) {
+    document.querySelector(".PresencePopup-status--" + status).click();
+});

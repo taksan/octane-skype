@@ -6,13 +6,12 @@ const fs            = require('fs');
 const nativeImage   = electron.nativeImage;
 let trayIcon        = null;
 let octaneInstance  = null;
-let basePath        = null;
+let basePath        = __dirname + '/../assets/tray/';
 let lastCount       = 0;
 let logo            = null;
 
 exports.initialize = function(instance) {
     octaneInstance = instance;
-    basePath   = __dirname + '/../assets/tray/';
 
     var logoData = fs.readFileSync(`${basePath}skype-online.png`);
     logo = new Canvas.Image;
@@ -70,35 +69,33 @@ function drawTrayIconMessageCount(ctx, count)
 
 let contextMenu = new electron.Menu.buildFromTemplate([
     {
-        label: "Open",
-        click: () => {
-            octaneInstance.show();
-        }
+        label: "Activate",
+        click: () => octaneInstance.show()
     },
     {
-        label: "Online Status",
-        submenu: [
-            {
-                label: "Online",
-                click: () => octaneInstance.statusChange("online")
-            },
-            {
-                label: "Away",
-                click: () => octaneInstance.statusChange("idle")
-            },
-            {
-                label: "Busy",
-                click: () => octaneInstance.statusChange("dnd")
-            },
-            {
-                label: "Invisible",
-                click: () => octaneInstance.statusChange("hidden")
-            }
-        ]
+        label: "Online",
+        icon:`${basePath}skype-online.png`,
+        click: () => octaneInstance.statusChange("online")
+    },
+    {
+        label: "Away",
+        icon:`${basePath}skype-idle.png`,
+        click: () => octaneInstance.statusChange("idle")
+    },
+    {
+        label: "Busy",
+        icon:`${basePath}skype-dnd.png`,
+        click: () => octaneInstance.statusChange("dnd")
+    },
+    {
+        label: "Invisible",
+        icon:`${basePath}skype-hidden.png`,
+        click: () => octaneInstance.statusChange("hidden")
     },
     {
         role: "quit",
         label: "Exit",
+        accelerator: "Ctrl+Q",
         click: () => electron.app.quit()
     }
 ]);

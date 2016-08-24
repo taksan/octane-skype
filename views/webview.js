@@ -38,3 +38,12 @@ electron.ipcRenderer.on('main-window-focused', () => {
 skypeView.addEventListener('console-message', (e) =>
     console.log('Guest page logged a message:', e.message)
 );
+
+electron.ipcRenderer.on("status-change", function(event, status) {
+    // default to idle if status not found
+    if (status != "online" && status != "idle" && status != "dnd" && status != "hidden")
+        status = "idle";
+
+    skypeView.send('status-change', status);
+});
+
