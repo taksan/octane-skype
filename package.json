@@ -29,6 +29,7 @@
   "dependencies": {
     "stylus": "^0.54.5",
     "canvas": "1.4.0",
-    "jquery": "2.2.3"
+    "jquery": "2.2.3",
+    "highlight.js": "9.6.0"
   }
 }

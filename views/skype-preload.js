@@ -30,7 +30,8 @@ ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
 
     addOnList.forEach(function (addOn) {
         try {
-            require(addOn).initUi(settings);
+            var addonModule = require(addOn);
+            addonModule.initUi(settings.config.addons[addonModule.addonName()], settings);
         } catch (err) {
             console.error("Failed to load addon : " + addOn);
             console.error(err);
