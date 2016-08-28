@@ -13,19 +13,7 @@ module.exports.initUi = function (addonConfig, settings) {
     if (!navigation)
         return;
     isInitialized = true;
-    console.log("swx-navigation found")
-
-    window.toggleOctaneOption = function (btn, target) {
-        if ($(btn).hasClass("ToggleButton--checked")) {
-            $(btn).removeClass("ToggleButton--checked");
-            $("#"+target).val(false);
-        }
-        else {
-            $(btn).addClass("ToggleButton--checked")
-            $("#"+target).val(true);
-        }
-        $("#"+target).change();
-    };
+    console.log("swx-navigation found");
 
     var observer = new MutationObserver(() => {
         console.log("obs 1");
@@ -101,8 +89,7 @@ const typeInfo = {
                 <div class="pref-template-boolean-inner">
                     <div class="pref-template-boolean-buttonWrap">
                         <swx-toggle-button class="pref-toggle-btn">
-                        <button class="ToggleButton ToggleButton${checked}" type="button" role="checkbox" onclick="toggleOctaneOption(this, '${id}')"/>
-                        <input id="${id}" type="hidden" value="${config[defName]}"/>
+                        <button id="${id}" class="ToggleButton ToggleButton${checked}" type="button" role="checkbox"/>
                         </swx-toggle-button>
                     </div>
                     <div class="pref-toggle-col">
@@ -113,10 +100,17 @@ const typeInfo = {
             </li>`
         },
         addChangeHandler: function(addOnName, defName) {
-            $("#" + addOnName+"_" + defName).change(function () {
-                var value = $("#" + addOnName+"_" + defName).val();
-                value = value == "true";
-                updateSetting(addOnName, defName, value);
+            $("#" + addOnName+"_" + defName).click(function(){
+                var newState;
+                if ($(this).hasClass("ToggleButton--checked")) {
+                    $(this).removeClass("ToggleButton--checked");
+                    newState = false;
+                }
+                else {
+                    $(this).addClass("ToggleButton--checked")
+                    newState = true;
+                }
+                updateSetting(addOnName, defName, newState);
             });
         }
     },
