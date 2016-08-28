@@ -9,7 +9,7 @@ addOns.initialize(skypeView, octaneApp);
 skypeView.addEventListener('did-navigate', () => {
     var theme = octaneApp.settings().config.Theme;
     themes.load(skypeView, theme);
-    addOns.initBackend(skypeView, octaneApp.settings);
+    addOns.initBackend(skypeView, octaneApp.settings().config);
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {

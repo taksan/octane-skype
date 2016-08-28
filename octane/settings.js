@@ -1,7 +1,8 @@
 const electron      = require('electron');
 const path          = require('path');
 const fs            = require('fs');
-const themeManager  = require('./themeManager')
+const themeManager  = require('./themeManager');
+const addonManager  = require('./addOnManager');
 
 var settingsFile = path.join(electron.app.getPath('userData'), 'settings.json');
 
@@ -46,6 +47,14 @@ module.exports = {
             this.saveConfiguration();
 
         Object.assign(this.config, JSON.parse(fs.readFileSync(settingsFile)));
+
+        addonManager.forEachConfig(function(addonName, configKey, metadata) {
+            if (!module.exports.metadata.addons[addonName])
+                module.exports.metadata.addons[addonName]={};
+            module.exports.metadata.addons[addonName][configKey] = metadata;
+            if (!module.exports.config.addons[addonName])
+                module.exports.config.addons[addonName]={};
+        });
     },
 
     saveConfiguration: function() {
@@ -57,12 +66,14 @@ module.exports = {
     },
 
     settingsUpdate: function (attribute, value) {
+        var config = module.exports.config;
         var attributePath =attribute.split("_");
         if (attributePath[0] == "main")
-            module.exports.config[attributePath[1]] = value;
-        else
-            module.exports.config.addons[attributePath[0]][attributePath[1]] = value;
+            config[attributePath[1]] = value;
+        else {
+            config.addons[attributePath[0]][attributePath[1]] = value;
+        }
 
         module.exports.saveConfiguration();
     }
-}
+};

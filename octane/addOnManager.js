@@ -20,17 +20,24 @@ module.exports.initialize = function () {
     });
 };
 
-module.exports.initBackend = function(webview, settingsFunction) {
-    var settings = settingsFunction().config;
+module.exports.initBackend = function(webview, config) {
     for (var addonFile in addOns) {
         var addon = addOns[addonFile];
-        if (addon.cssToLoad)
-            addon.cssToLoad(settings.Theme).forEach(function (cssToLoad) {
-                var cssFullPath = addonFile.replace(/\/[^/]*.js$/, "/" + cssToLoad);
-                loadCss(webview, addon, cssFullPath);
-            });
         if (addon.initBackend)
-            addon.initBackend(webview, settingsFunction);
+            addon.initBackend(webview, config.addons[addon.addonName()], config.Theme);
+    }
+};
+
+module.exports.forEachConfig = function(fn) {
+    var self = module.exports;
+    self.initialize();
+    for (var key in addOns) {
+        var addOn = addOns[key];
+        if (addOn.getPreferences) {
+            addOn.getPreferences().forEach(function(preference) {
+                fn(addOn.addonName(), preference.configKey, preference.metadata)
+            })
+        }
     }
 };
 
@@ -41,10 +48,3 @@ module.exports.getNames = function() {
     return addOnFiles;
 };
 
-function loadCss(webview, addOn, cssFileName) {
-    fs.readFile(cssFileName, 'utf8', function (err, cssFile) {
-        if (addOn.preprocessCss)
-            cssFile = addOn.preprocessCss(cssFile);
-        webview.insertCSS(cssFile);
-    });
-}
