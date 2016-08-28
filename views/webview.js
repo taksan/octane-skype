@@ -1,15 +1,15 @@
-var electron  = require('electron');
-var themes    = require('../octane/themeManager');
-var addOns    = require('../octane/addOnManager');
-var octaneApp = electron.remote.require('../octane/Octane');
-var skypeView = document.getElementById('skype-view');
+const electron  = require('electron');
+const themes    = require('../octane/themeManager');
+const addOns    = require('../octane/addOnManager');
+const octaneApp = electron.remote.require('../octane/Octane');
+const skypeView = document.getElementById('skype-view');
 
 addOns.initialize(skypeView, octaneApp);
 
 skypeView.addEventListener('did-navigate', () => {
     var theme = octaneApp.settings().config.Theme;
     themes.load(skypeView, theme);
-    addOns.initBackend(skypeView, octaneApp.settings().config);
+    addOns.initBackend(skypeView, octaneApp.settings);
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {
@@ -49,4 +49,3 @@ electron.ipcRenderer.on("status-change", function(event, status) {
 
     skypeView.send('status-change', status);
 });
-

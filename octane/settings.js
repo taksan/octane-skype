@@ -13,7 +13,8 @@ module.exports = {
         },
         Theme: "dark-compact",
         addons:{},
-        StartMinimized: false
+        StartMinimized: false,
+        NativeImageViewer: true
     },
 
     metadata: {
@@ -29,6 +30,11 @@ module.exports = {
             StartMinimized: {
                 title: "Start minimized",
                 description: "Start with main window hidden",
+                type: "boolean"
+            },
+            NativeImageViewer: {
+                title: "Open images with native viewer",
+                description: "Use the native viewer to open images instead of browser",
                 type: "boolean"
             }
         },

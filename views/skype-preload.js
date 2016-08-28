@@ -35,7 +35,7 @@ ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
             console.error("Failed to load addon : " + addOn);
             console.error(err);
         }
-    })
+    });
 });
 
 ipc.on('status-change', function(event, status) {
