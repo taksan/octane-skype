@@ -1,0 +1,98 @@
+:root .swx .text-search-box {
+    z-index:          1000;
+    top:              10px;
+    margin:           auto;
+    position:         relative;
+    width:            20em;
+    border:           1px solid;
+    padding:          .3em;
+    padding-left:     1em;
+    padding-right:    0em;
+    font-size:        .75em;
+    font-weight:      normal
+}
+
+:root .swx .text-search-box .search-button {
+    font-size:       40px         !important;
+    display:         inline-block !important;
+    vertical-align:  middle       !important;
+    width:           40px         !important;
+    cursor:          pointer      !important;
+}
+
+:root .swx .text-search-box .search-direction {
+    display:         inline;
+    font-size:       20px;
+    vertical-align: text-top;
+    margin-left:    -20px;
+    cursor:         pointer;
+
+}
+
+:root .swx .text-search-box .case-matching {
+    font-size:       .75em          !important;
+    margin-left:     -3em           !important;
+    display:         inline-block   !important;
+    vertical-align:  bottom         !important;
+    width:           0px            !important;
+    font-weight:     bold;
+    cursor:          pointer;
+}
+:root .swx .text-search-box .case-matching .case-matching-sign {
+    font-size: 1.3em;
+}
+
+
+:root .swx .search-input {
+    border:           0px !important;
+    width:            calc(100% - 60px);
+    border-bottom:    1px solid !important;
+}
+
+:root .swx .search-highlight {
+    transition:       background-color 1s;
+    color:            black;
+    background-color: yellow;
+}
+
+:root .swx .current-match {
+    background-color: red !important
+}
+
+:root .swx .search-results {
+    width:            0em;
+    display:          inline-block;
+    position:         absolute;
+    right:            0px;
+    top:              4em;
+    transition:       width .5s ease-in-out;
+    overflow:         auto;
+}
+
+:root .swx .search-result-title {
+    margin-left:   .5em;
+    margin-bottom: .5em
+}
+
+:root .swx .result-snippet {
+    font-size:     .6em;
+    margin-left:   1em;
+    display:       block;
+    margin-right:  2em;
+    margin-top:    .3em;
+    font-size:     .6em;
+    line-height:   1.2em !important;
+    padding:       .5em;
+    cursor:        pointer;
+    transition:    background-color .5s;
+    overflow-x:    hidden;
+    border: 	   1px solid
+}
+
+:root .swx .result-snippet:hover {
+    background-color: 	#c7edfc  !important
+}
+
+:root .swx .bubble .flash-message {
+    background-color: 	#eef6f9  !important
+}
