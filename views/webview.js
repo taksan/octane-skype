@@ -1,22 +1,22 @@
 var electron  = require('electron');
-var themes    = require('./themeManager');
-var addOns    = require('./addOnManager');
+var themes    = require('../octane/themeManager');
+var addOns    = require('../octane/addOnManager');
 var octaneApp = electron.remote.require('../octane/Octane');
 var skypeView = document.getElementById('skype-view');
 
-addOns.initialize(skypeView);
+addOns.initialize(skypeView, octaneApp);
 
 skypeView.addEventListener('did-navigate', () => {
-    var theme = octaneApp.settings().Theme;
+    var theme = octaneApp.settings().config.Theme;
     themes.load(skypeView, theme);
-    addOns.loadAddonsCss(skypeView, theme);
+    addOns.initBackend(skypeView, octaneApp.settings().config);
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {
     if (!e.target.getURL().match(/https:\/\/web.skype.com\/.+\/.*/))
         return;
 
-    skypeView.send("main-window-loaded", addOns.getNames());
+    skypeView.send("main-window-loaded", addOns.getNames(), JSON.stringify(octaneApp.settings()));
 });
 
 skypeView.addEventListener('ipc-message', (event) => {
@@ -26,6 +26,9 @@ skypeView.addEventListener('ipc-message', (event) => {
             break;
         case 'focus':
             octaneApp.show();
+            break;
+        case 'settings-update':
+            octaneApp.settings().settingsUpdate(event.args[0], event.args[1]);
             break;
     }
 });

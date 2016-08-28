@@ -20,16 +20,17 @@ ipc.on('main-window-focused', function () {
         window.document.querySelector("textarea").focus();
 });
 
-ipc.on('main-window-loaded', function (event, addOnList) {
+ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
     var sidebar = document.querySelector("swx-sidebar");
     if (!sidebar) return;
 
+    var settings = JSON.parse(settingsJson);
     var observer = new MutationObserver(() => updateNotificationCount());
     observer.observe(sidebar, {subtree: true, childList: true});
 
     addOnList.forEach(function (addOn) {
         try {
-            require(addOn).initUi();
+            require(addOn).initUi(settings);
         } catch (err) {
             console.error("Failed to load addon : " + addOn);
             console.error(err);

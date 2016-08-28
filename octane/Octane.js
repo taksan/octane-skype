@@ -1,5 +1,6 @@
 const electron      = require('electron');
 const trayIcon      = require('./trayIcon');
+const settings      = require('./settings');
 const path          = require('path');
 const fs            = require('fs');
 const BrowserWindow = electron.BrowserWindow;
@@ -7,19 +8,19 @@ const app           = electron.app;
 
 var initialized   = false;
 var octaneWindow = null;
-var settingsFile = path.join(electron.app.getPath('userData'), 'settings.json');
 
-OctaneSkype = {
+var OctaneSkype = {
     initialize : function() {
         if (initialized) return;
 
-        this.loadSettings();
+        settings.loadConfiguration();
 
         var options = {
             autoHideMenuBar: true,
             icon: app.getAppPath() + '/assets/skype-icon.png'
         };
-        Object.assign(options, this._settings.window);
+        Object.assign(options, settings.config.window);
+        options.show = !settings.config.StartMinimized;
 
         octaneWindow = new BrowserWindow(options);
 
@@ -46,7 +47,7 @@ OctaneSkype = {
         });
 
         octaneWindow.on('close', function(event) {
-            OctaneSkype.saveSettings();
+            settings.saveConfiguration();
             if (isQuiting) {
                 return;
             }
@@ -90,33 +91,11 @@ OctaneSkype = {
     },
 
     settings: function() {
-        return this._settings;
+        return settings;
     },
 
     updateSettingsSize: function() {
-        Object.assign(this._settings.window, octaneWindow.getBounds())
-    },
-
-    loadSettings: function() {
-        this._settings = {
-            window: {
-                width: 1024,
-                height: 768
-            },
-            Theme: "dark-compact"
-        };
-        if (!fs.existsSync(settingsFile))
-            this.saveSettings();
-
-        Object.assign(this._settings , JSON.parse(fs.readFileSync(settingsFile)));
-    },
-
-    saveSettings: function() {
-        let data = JSON.stringify(this._settings, null, "  ");
-        let tmpFile = settingsFile + '.tmp';
-
-        fs.writeFileSync(tmpFile, data);
-        fs.renameSync(tmpFile, settingsFile);
+        Object.assign(settings.config.window, octaneWindow.getBounds())
     }
 };
 

@@ -1,28 +1,38 @@
 $ = require('../../node_modules/jquery/dist/jquery.min.js');
+const ipc = require('electron').ipcRenderer;
 
 var isInitialized = false;
 module.exports.addonName = function () {
     return "settings-page-addon";
 };
 
-module.exports.initUi = function () {
+module.exports.initUi = function (settings) {
     if (isInitialized) return;
     isInitialized = true;
 
-    window.toggleOctaneOption = function (btn) {
-        if ($(btn).hasClass("ToggleButton--checked"))
+    window.toggleOctaneOption = function (btn, target) {
+        if ($(btn).hasClass("ToggleButton--checked")) {
             $(btn).removeClass("ToggleButton--checked");
-        else
+            $("#"+target).val(false);
+        }
+        else {
             $(btn).addClass("ToggleButton--checked")
+            $("#"+target).val(true);
+        }
+        $("#"+target).change();
     };
 
     var navigation = document.querySelector("swx-navigation");
     var observer = new MutationObserver(() => {
+        console.log("obs 1");
         if ($(".UserSettingsPage").size() == 0)
             return;
 
+        console.log("obs 2")
+
         if ($("#octane-settings").size() > 0)
             return;
+        console.log("obs 3")
 
         $(".UserSettingsPage-list").after(
             $(  "<ul>" +
@@ -32,7 +42,7 @@ module.exports.initUi = function () {
                 "</ul>")
         );
         $("#octane-settings").find("a").click(function() {
-            openOctaneSettings()
+            openOctaneSettings(settings)
         });
         $(".UserSettingsPage-list:first").click(function() {
             $("#octane-settings").find("a").removeClass("active");
@@ -41,28 +51,68 @@ module.exports.initUi = function () {
     observer.observe(navigation, {subtree: true, childList: true});
 };
 
-var templates = {
-    boolean: function(label, description) {
+function openOctaneSettings(settings) {
+    $(".UserSettingsPage-list:first a").removeClass("active");
+    $("#octane-settings").find("a").addClass("active");
+    $(".UserSettingsPage-detail .UserSettingsPage-heading").html("Octane Settings");
+
+    //var codeHighlightEnabled = templates["boolean"]("Highlight code", "Highlight code marked with ```");
+
+    $(".UserSettingsPage-scroll-area .scrollViewport").html(
+        '<ul class="UserSettingsPage-list"></ul>');
+
+    var defName;
+    for (defName in settings.metadata.main)  {
+        var definition = settings.metadata.main[defName];
+        var component = templates[definition.type]("main_"+defName, defName, definition.title, definition.description, settings.config, definition.data);
+        $(".UserSettingsPage-scroll-area .scrollViewport ul").append($(component));
+
+        $("#main_"+defName).change(function(){
+            var value = $("#main_"+defName).val();
+            if (definition.type == "boolean")
+                value = value == "true";
+            ipc.sendToHost("settings-update", "main_"+defName, value);
+        });
+    }
+
+    return false;
+}
+
+const templates = {
+    boolean: function (id, defName, title, description, config) {
+        var checked = "";
+        if (config[defName])
+            checked = "--checked";
+
         return `<li class="UserSettingsPage-option pref-template-boolean">
-                <div>
-                <swx-toggle-button class="pref-toggle-btn">
-                <button id="highlight" class="ToggleButton ToggleButton--checked" type="button" role="checkbox" onclick="toggleOctaneOption(this)"/>
-                </swx-toggle-button></div><div class="pref-toggle-col">
-                <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${label}</h2>
-                <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${description}</p>
+                <div class="pref-template-boolean-inner">
+                    <div class="pref-template-boolean-buttonWrap">
+                        <swx-toggle-button class="pref-toggle-btn">
+                        <button class="ToggleButton ToggleButton${checked}" type="button" role="checkbox" onclick="toggleOctaneOption(this, '${id}')"/>
+                        <input id="${id}" type="hidden" value="${config[defName]}"/>
+                        </swx-toggle-button>
+                    </div>
+                    <div class="pref-toggle-col">
+                        <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${title}</h2>
+                    </div>
                 </div>
+                <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${description}</p>                
         </li>`
     },
-    select : function (label, description, options) {
-        var selectOptions = ""
-        options.forEach(function(anOption) {
-            selectOptions += `<option value="${anOption.value}">${anOption.label}</option>\n`
+    select : function (id, defName, title, description, config, data) {
+        var selectOptions = "";
+        var currentValue = config[defName];
+        data.values.forEach(function(anOption) {
+            var selected = "";
+            if (anOption.value == currentValue)
+                selected = "selected='selected'";
+            selectOptions += `<option value="${anOption.value}" ${selected}>${anOption.label}</option>\n`
         });
         return `<li class="UserSettingsPage-option pref-template-select">
-                <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${label}</h2>
+                <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${title}</h2>
                 <div>
                     <div class="pref-select-element">
-                        <select>
+                        <select id="${id}">
                             ${selectOptions}
                          </select>
                     </div>
@@ -71,25 +121,3 @@ var templates = {
             </li>`
     }
 };
-
-function openOctaneSettings() {
-    $(".UserSettingsPage-list:first a").removeClass("active");
-    $("#octane-settings").find("a").addClass("active");
-    $(".UserSettingsPage-detail .UserSettingsPage-heading").html("Octane Settings");
-
-    var codeHighlightEnabled = templates["boolean"]("Highlight code", "Highlight code marked with ```");
-    var themeSelect = templates["select"]("Theme", "Requires restart",
-        [
-            {value:0,label:"Web Skype"},
-            {value:1,label:"Web Skype Compact"},
-            {value:2,label:"Dark"},
-            {value:3,label:"Dark Compact"},
-        ]);
-
-    $(".UserSettingsPage-scroll-area .scrollViewport").html(
-        '<ul class="UserSettingsPage-list">'+
-        codeHighlightEnabled+themeSelect+
-        '</ul>');
-
-    return false;
-}

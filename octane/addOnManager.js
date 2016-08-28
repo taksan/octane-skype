@@ -20,13 +20,13 @@ module.exports.initialize = function () {
     });
 };
 
-module.exports.loadAddonsCss = function(webview, theme) {
+module.exports.initBackend = function(webview, settings) {
     for (var addonFile in addOns) {
         var addon = addOns[addonFile];
         if (!addon.cssToLoad)
             continue;
 
-        addon.cssToLoad(theme).forEach(function (cssToLoad) {
+        addon.cssToLoad(settings.Theme).forEach(function (cssToLoad) {
             var cssFullPath = addonFile.replace(/\/[^/]*.js$/, "/" + cssToLoad);
             loadCss(webview, addon, cssFullPath);
         });
