@@ -5,6 +5,7 @@ const path          = require('path');
 const fs            = require('fs');
 const BrowserWindow = electron.BrowserWindow;
 const app           = electron.app;
+const ipcMain       = electron.ipcMain;
 
 var initialized   = false;
 var octaneWindow = null;
@@ -35,6 +36,10 @@ var OctaneSkype = {
         octaneWindow.webContents.on('will-navigate', (ev) => ev.preventDefault());
 
         octaneWindow.loadURL(`file://${__dirname}/../views/index.html`);
+
+        ipcMain.on("unseen-chat-changed", (e,count) => trayIcon.setNotificationCount(count));
+        ipcMain.on("focus", (e,count) => OctaneSkype.show());
+        ipcMain.on("settings-update", (e,setting, value)=>settings.settingsUpdate(setting, value));
 
         initialized = true;
     },
@@ -84,10 +89,6 @@ var OctaneSkype = {
 
     statusChange : function(status) {
         octaneWindow.webContents.send("status-change", status)
-    },
-
-    setNotificationCount : function(count) {
-        trayIcon.setNotificationCount(count);
     },
 
     settings: function() {

@@ -19,18 +19,16 @@ skypeView.addEventListener('did-stop-loading', (e) => {
     skypeView.send("main-window-loaded", addOns.getNames(), JSON.stringify(octaneApp.settings()));
 });
 
-skypeView.addEventListener('ipc-message', (event) => {
-    switch(event.channel){
-        case 'unseen-chat-changed':
-            octaneApp.setNotificationCount(event.args);
-            break;
-        case 'focus':
-            octaneApp.show();
-            break;
-        case 'settings-update':
-            octaneApp.settings().settingsUpdate(event.args[0], event.args[1]);
-            break;
+skypeView.addEventListener('did-fail-load', function(event) {
+    if (event.errorCode === -106) {
+        electron.ipcRenderer.send('log', 'Connection Unavailable');
+        setTimeout(function () {
+            skypeView.reload();
+        }, 2500);
+        return;
     }
+
+    electron.ipcRenderer.send('log', 'Failed to load: ' + JSON.stringify(event));
 });
 
 electron.ipcRenderer.on('main-window-focused', () => {

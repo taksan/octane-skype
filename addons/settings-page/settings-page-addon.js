@@ -86,6 +86,10 @@ function setupComponents(metadataRoot, configRoot, addOnName) {
     }
 }
 
+function updateSetting(addOnName, configKey, value) {
+    ipc.send("settings-update", addOnName+"_" + configKey, value);
+}
+
 const typeInfo = {
     boolean: {
         makeHtml: function (addOnName, defName, title, description, config) {
@@ -112,7 +116,7 @@ const typeInfo = {
             $("#" + addOnName+"_" + defName).change(function () {
                 var value = $("#" + addOnName+"_" + defName).val();
                 value = value == "true";
-                ipc.sendToHost("settings-update", addOnName+"_" + defName, value);
+                updateSetting(addOnName, defName, value);
             });
         }
     },
@@ -142,7 +146,7 @@ const typeInfo = {
         addChangeHandler: function(addOnName, defName) {
             $("#" + addOnName+"_" + defName).change(function () {
                 var value = $("#" + addOnName+"_" + defName).val();
-                ipc.sendToHost("settings-update", addOnName+"_" + defName, value);
+                updateSetting(addOnName, defName, value);
             });
         }
     }

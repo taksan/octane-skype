@@ -5,13 +5,13 @@ const ipc = require('electron').ipcRenderer;
 // this is a hack that makes the window raise, because skype's notification onclick invoke window.focus
 var previousFocus = window.focus;
 window.focus = function() {
-    ipc.sendToHost('focus');
+    ipc.send('focus');
     previousFocus.apply(this, arguments)
 };
 
 function updateNotificationCount() {
     var unreadCount = document.querySelectorAll(".unseenNotifications").length;
-    ipc.sendToHost('unseen-chat-changed', unreadCount);
+    ipc.send('unseen-chat-changed', unreadCount);
 }
 
 ipc.on('main-window-focused', function () {
@@ -21,8 +21,10 @@ ipc.on('main-window-focused', function () {
 });
 
 ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
+    console.log("main-window-loaded 1")
     var sidebar = document.querySelector("swx-sidebar");
     if (!sidebar) return;
+    console.log("main-window-loaded 2")
 
     var settings = JSON.parse(settingsJson);
     var observer = new MutationObserver(() => updateNotificationCount());
