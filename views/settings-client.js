@@ -39,10 +39,16 @@ function AddOn(name, metadata, config) {
     };
 
     this.update = function(key, value) {
-        ipc.send("settings-update", name, key, value);
+        var res = ipc.sendSync("settings-update", name, key, value);
+        if (!res.success) {
+            alert(res.message);
+            return false;
+        }
+
         if (name == "main")
             settings.config[key] = value;
         else
             settings.config.addons[name][key] = value;
+        return true;
     }
 }

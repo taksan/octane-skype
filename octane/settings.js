@@ -3,6 +3,7 @@ const path          = require('path');
 const fs            = require('fs');
 const themeManager  = require('./themeManager');
 const addonManager  = require('./addOnManager');
+const os            = require('os');
 const ipcMain       = electron.ipcMain;
 
 var settingsFile = path.join(electron.app.getPath('userData'), 'settings.json');
@@ -49,11 +50,26 @@ module.exports = {
         addons: {}
     },
 
+    autoStartFile: function() {
+        return os.homedir() + "/.config/autostart/octane.desktop";
+    },
+
+    autoStartFileExists: function() {
+        var autostartFile = this.autoStartFile();
+        try {
+            fs.readlinkSync(autostartFile);
+            return true;
+        } catch(ex) {
+            return false;
+        }
+    },
+
     loadConfiguration: function() {
         if (!fs.existsSync(settingsFile))
             this.saveConfiguration();
 
         Object.assign(this.config, JSON.parse(fs.readFileSync(settingsFile)));
+        module.exports.config.AutoStart = this.autoStartFileExists();
 
         addonManager.forEachConfig(function(addonName, configKey, metadata) {
             if (!module.exports.metadata.addons[addonName])

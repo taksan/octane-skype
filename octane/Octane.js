@@ -6,9 +6,10 @@ const fs            = require('fs');
 const BrowserWindow = electron.BrowserWindow;
 const app           = electron.app;
 const ipcMain       = electron.ipcMain;
+const os            = require("os");
 
 var initialized   = false;
-var octaneWindow = null;
+var octaneWindow  = null;
 
 var OctaneSkype = {
     initialize : function() {
@@ -40,7 +41,34 @@ var OctaneSkype = {
         ipcMain.on("unseen-chat-changed", (e,count) => trayIcon.setNotificationCount(count));
         ipcMain.on("focus", (e,count) => OctaneSkype.show());
 
+        ipcMain.on("settings-update", (evt, addon, configKey, value)=> {
+            if (configKey != "AutoStart") return;
+            OctaneSkype.enableAutostart(evt, value);
+        });
+
         initialized = true;
+    },
+
+    enableAutostart: function(evt, autostartEnabled) {
+        var autostartFile = settings.autoStartFile();
+        if (autostartEnabled) {
+            let target = '/usr/share/applications/octane.desktop';
+            fs.symlink(target, autostartFile, (err) => {
+                if (!err) {
+                    evt.returnValue = { success: true };
+                    return;
+                }
+
+                if (settings.autoStartFileExists())
+                    evt.returnValue = { success: false , message: "Octane does not have permission to write to " + autostartFile};
+                else
+                    evt.returnValue = { success: false , message: "Failure trying to enable autostart" };
+            });
+        } else {
+            fs.unlink(autostartFile);
+            evt.returnValue = { success: true };
+            console.log("enableAutostart: success");
+        }
     },
 
     changeQuitToHide: function() {

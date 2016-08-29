@@ -70,31 +70,32 @@ const typeInfo = {
                 checked = "--checked";
             var id = addOnName+"_" + definition.name;
             return `<li class="UserSettingsPage-option pref-template-boolean">
-                <div class="pref-template-boolean-inner">
-                    <div class="pref-template-boolean-buttonWrap">
-                        <swx-toggle-button class="pref-toggle-btn">
-                        <button id="${id}" class="ToggleButton ToggleButton${checked}" type="button" role="checkbox"/>
-                        </swx-toggle-button>
-                    </div>
-                    <div class="pref-toggle-col">
-                        <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${definition.title}</h2>
-                    </div>
-                </div>
-                <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>                
-            </li>`
+                        <div class="pref-template-boolean-inner">
+                            <div class="pref-template-boolean-buttonWrap">
+                                <swx-toggle-button class="pref-toggle-btn">
+                                <button id="${id}" class="ToggleButton ToggleButton${checked}" type="button" role="checkbox"/>
+                                </swx-toggle-button>
+                            </div>
+                            <div class="pref-toggle-col">
+                                <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${definition.title}</h2>
+                            </div>
+                        </div>
+                        <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>                
+                    </li>`
         },
         addChangeHandler: function(addon, defName) {
             $("#" + addon.name+"_" + defName).click(function(){
-                var newState;
-                if ($(this).hasClass("ToggleButton--checked")) {
+                var newState = !$(this).hasClass("ToggleButton--checked");
+                console.log(" will toggle to " + newState);
+                if (!addon.update(defName, newState))
+                    newState = !newState;
+
+                console.log(" state now is " + newState);
+
+                if (newState)
+                    $(this).addClass("ToggleButton--checked");
+                else
                     $(this).removeClass("ToggleButton--checked");
-                    newState = false;
-                }
-                else {
-                    $(this).addClass("ToggleButton--checked")
-                    newState = true;
-                }
-                addon.update(defName, newState);
             });
         }
     },
