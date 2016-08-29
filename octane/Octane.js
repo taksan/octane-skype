@@ -39,7 +39,6 @@ var OctaneSkype = {
 
         ipcMain.on("unseen-chat-changed", (e,count) => trayIcon.setNotificationCount(count));
         ipcMain.on("focus", (e,count) => OctaneSkype.show());
-        ipcMain.on("settings-update", (e,setting, value)=>settings.settingsUpdate(setting, value));
 
         initialized = true;
     },

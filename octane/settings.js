@@ -3,6 +3,7 @@ const path          = require('path');
 const fs            = require('fs');
 const themeManager  = require('./themeManager');
 const addonManager  = require('./addOnManager');
+const ipcMain       = electron.ipcMain;
 
 var settingsFile = path.join(electron.app.getPath('userData'), 'settings.json');
 
@@ -15,11 +16,17 @@ module.exports = {
         Theme: "dark-compact",
         addons:{},
         StartMinimized: false,
-        NativeImageViewer: true
+        NativeImageViewer: true,
+        AutoStart: true
     },
 
     metadata: {
         main: {
+            AutoStart: {
+                title: "Auto Start",
+                description: "Automatically starts when user logins",
+                type: "boolean"
+            },
             Theme: {
                 title: "Theme",
                 description: "Requires restart",
@@ -65,15 +72,15 @@ module.exports = {
         fs.renameSync(tmpFile, settingsFile);
     },
 
-    settingsUpdate: function (attribute, value) {
+    settingsUpdate: function (addon, configKey, value) {
         var config = module.exports.config;
-        var attributePath =attribute.split("_");
-        if (attributePath[0] == "main")
-            config[attributePath[1]] = value;
-        else {
-            config.addons[attributePath[0]][attributePath[1]] = value;
-        }
+
+        if (addon == "main")
+            config[configKey] = value;
+        else
+            config.addons[addon][configKey] = value;
 
         module.exports.saveConfiguration();
     }
 };
+ipcMain.on("settings-update", (e, addon, configKey, value)=>module.exports.settingsUpdate(addon, configKey, value));

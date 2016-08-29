@@ -80,7 +80,7 @@ module.exports.initUi = function (addonConfig) {
                 if (evt.clipboardData.types.indexOf("text/plain")>-1)
                     return;
                 listener.apply(this, arguments);
-            }
+            };
             this.addEventListenerBase.apply(this, ["paste", dontScrewPlainText, false]);
             return;
         }
@@ -103,6 +103,9 @@ module.exports.initUi = function (addonConfig) {
     // observe chat changes to highlight texts that start with @@
     var lastUpdatedCodeBlock = null;
     var observer = new MutationObserver(function (mutations) {
+        if (!addonConfig.HighlightEnabled)
+            return;
+
         var parentCodeBlock = null;
         mutations.forEach(function (mutation) {
             if (mutation.target)
@@ -136,11 +139,11 @@ module.exports.initUi = function (addonConfig) {
     });
     if (document.querySelector(".chatContainer"))
         observer.observe(document.querySelector(".chatContainer"), {subtree: true, childList: true});
-}
+};
 
 
 function preprocessCss(cssText) {
     // makes sure all colors in highlight.js css override skype colors
     return cssText.replace(/(background:.*);/g,"$1 !important;")
         .replace(/(color:.*);/g,"$1 !important;");
-};
+}

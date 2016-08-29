@@ -3,13 +3,15 @@ const themes    = require('../octane/themeManager');
 const addOns    = require('../octane/addOnManager');
 const octaneApp = electron.remote.require('../octane/Octane');
 const skypeView = document.getElementById('skype-view');
+const settingsClient = require("./settings-client");
+settingsClient.initialize(JSON.stringify(octaneApp.settings()));
 
 addOns.initialize(skypeView, octaneApp);
 
 skypeView.addEventListener('did-navigate', () => {
-    var theme = octaneApp.settings().config.Theme;
+    var theme = settingsClient.forAddon("main").Theme;
     themes.load(skypeView, theme);
-    addOns.initBackend(skypeView, octaneApp.settings().config);
+    addOns.initBackend(skypeView, settingsClient.forAddon("main"));
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {

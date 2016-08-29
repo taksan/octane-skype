@@ -1,5 +1,5 @@
-$ = require('../../node_modules/jquery/dist/jquery.min.js');
 const ipc = require('electron').ipcRenderer;
+$ = require('../../node_modules/jquery/dist/jquery.min.js');
 
 var isInitialized = false;
 module.exports.addonName = function () {
@@ -7,24 +7,18 @@ module.exports.addonName = function () {
 };
 
 module.exports.initUi = function (addonConfig, settings) {
-    console.log("trying to configure");
     if (isInitialized) return;
     var navigation = document.querySelector("swx-navigation");
     if (!navigation)
         return;
     isInitialized = true;
-    console.log("swx-navigation found");
 
     var observer = new MutationObserver(() => {
-        console.log("obs 1");
         if ($(".UserSettingsPage").size() == 0)
             return;
 
-        console.log("obs 2");
-
         if ($("#octane-settings").size() > 0)
             return;
-        console.log("obs 3");
 
         $(".UserSettingsPage-list").after(
             $(  "<ul>" +
@@ -51,40 +45,30 @@ function openOctaneSettings(settings) {
     $(".UserSettingsPage-scroll-area .scrollViewport").html(
         '<ul class="UserSettingsPage-list"></ul>');
 
-    $(".UserSettingsPage-scroll-area .scrollViewport ul").append(
-        `<li><h1 class="UserSettingsPage-heading">Main preferences</h1></li>`
-    );
-    setupComponents(settings.metadata.main, settings.config, "main");
-    for (var addOnName in settings.metadata.addons) {
+    settings.forEachAddon(function(addon) {
         $(".UserSettingsPage-scroll-area .scrollViewport ul").append(
-            `<li><h1 class="UserSettingsPage-heading">${addOnName} preferences</h1></li>`
+            `<li><h1 class="UserSettingsPage-heading">${addon.name} preferences</h1></li>`
         );
-        setupComponents(settings.metadata.addons[addOnName], settings.config.addons[addOnName], addOnName);
-    }
-
+        setupComponents(addon);
+    });
     return false;
 }
 
-function setupComponents(metadataRoot, configRoot, addOnName) {
-    for (var defName in metadataRoot) {
-        var definition = metadataRoot[defName];
-        var component = typeInfo[definition.type].makeHtml(addOnName, defName, definition.title, definition.description, configRoot, definition.data);
+function setupComponents(addon) {
+    addon.forEachDefinition(function(definition) {
+        var component = typeInfo[definition.type].makeHtml(addon.name, definition);
         $(".UserSettingsPage-scroll-area .scrollViewport ul").append($(component));
-        typeInfo[definition.type].addChangeHandler(addOnName, defName);
-    }
-}
-
-function updateSetting(addOnName, configKey, value) {
-    ipc.send("settings-update", addOnName+"_" + configKey, value);
+        typeInfo[definition.type].addChangeHandler(addon, definition.name);
+    });
 }
 
 const typeInfo = {
     boolean: {
-        makeHtml: function (addOnName, defName, title, description, config) {
+        makeHtml: function (addOnName, definition) {
             var checked = "";
-            if (config[defName])
+            if (definition.currentValue)
                 checked = "--checked";
-            var id = addOnName+"_" + defName;
+            var id = addOnName+"_" + definition.name;
             return `<li class="UserSettingsPage-option pref-template-boolean">
                 <div class="pref-template-boolean-inner">
                     <div class="pref-template-boolean-buttonWrap">
@@ -93,14 +77,14 @@ const typeInfo = {
                         </swx-toggle-button>
                     </div>
                     <div class="pref-toggle-col">
-                        <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${title}</h2>
+                        <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${definition.title}</h2>
                     </div>
                 </div>
-                <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${description}</p>                
+                <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>                
             </li>`
         },
-        addChangeHandler: function(addOnName, defName) {
-            $("#" + addOnName+"_" + defName).click(function(){
+        addChangeHandler: function(addon, defName) {
+            $("#" + addon.name+"_" + defName).click(function(){
                 var newState;
                 if ($(this).hasClass("ToggleButton--checked")) {
                     $(this).removeClass("ToggleButton--checked");
@@ -110,23 +94,22 @@ const typeInfo = {
                     $(this).addClass("ToggleButton--checked")
                     newState = true;
                 }
-                updateSetting(addOnName, defName, newState);
+                addon.update(defName, newState);
             });
         }
     },
     select : {
-        makeHtml: function (addOnName, defName, title, description, config, data) {
-            var id = addOnName+"_" + defName;
+        makeHtml: function (addOnName, definition) {
+            var id = addOnName+"_" + definition.name;
             var selectOptions = "";
-            var currentValue = config[defName];
-            data.values.forEach(function(anOption) {
+            definition.data.values.forEach(function(anOption) {
                 var selected = "";
-                if (anOption.value == currentValue)
+                if (anOption.value == definition.currentValue)
                     selected = "selected='selected'";
                 selectOptions += `<option value="${anOption.value}" ${selected}>${anOption.label}</option>\n`
             });
             return `<li class="UserSettingsPage-option pref-template-select">
-                    <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${title}</h2>
+                    <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${definition.title}</h2>
                     <div>
                         <div class="pref-select-element">
                             <select id="${id}">
@@ -134,13 +117,13 @@ const typeInfo = {
                              </select>
                         </div>
                     </div>
-                    <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${description}</p>
+                    <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>
                 </li>`
         },
-        addChangeHandler: function(addOnName, defName) {
-            $("#" + addOnName+"_" + defName).change(function () {
-                var value = $("#" + addOnName+"_" + defName).val();
-                updateSetting(addOnName, defName, value);
+        addChangeHandler: function(addon, defName) {
+            $("#" + addon.name+"_" + defName).change(function () {
+                var value = $("#" + addon.name+"_" + defName).val();
+                addon.update(defName, value);
             });
         }
     }

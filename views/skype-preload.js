@@ -26,16 +26,18 @@ ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
     if (!sidebar) return;
     console.log("main-window-loaded 2")
 
-    var settings = JSON.parse(settingsJson);
+    const settingsClient = require("./settings-client");
+    settingsClient.initialize(settingsJson);
+
     var observer = new MutationObserver(() => updateNotificationCount());
     observer.observe(sidebar, {subtree: true, childList: true});
 
     addOnList.forEach(function (addOn) {
         try {
             var addonModule = require(addOn);
-            addonModule.initUi(settings.config.addons[addonModule.addonName()], settings);
+            addonModule.initUi(settingsClient.forAddon(addonModule.addonName()), settingsClient);
         } catch (err) {
-            console.error("Failed to load addon : " + addOn);
+            console.error("Failed to load AddOn : " + addOn);
             console.error(err);
         }
     });
