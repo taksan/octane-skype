@@ -67,7 +67,6 @@ var OctaneSkype = {
         } else {
             fs.unlink(autostartFile);
             evt.returnValue = { success: true };
-            console.log("enableAutostart: success");
         }
     },
 

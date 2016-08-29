@@ -36,10 +36,13 @@ module.exports.initUi = function () {
         if ($elem.length) {
             ipc.sendToHost('open-link', $elem.prop('href'));
         }
+        // else {
+        //     ipc.sendToHost('open-link', $(event.target).prop('href'));
+        // }
     });
 };
 
-module.exports.initBackend = function(webview, settingsFunction) {
+module.exports.initBackend = function(webview, addonSettings, config) {
     webview.addEventListener('ipc-message', (event) => {
         if (event.channel != "open-link")
             return;
@@ -48,7 +51,6 @@ module.exports.initBackend = function(webview, settingsFunction) {
         console.log('Opening: ' + href);
         let protocol = url.parse(href).protocol;
 
-        var config = settingsFunction().config;
         if (config.NativeImageViewer && href.indexOf('imgpsh_fullsize') >= 0)
             ipc.send('image:download', href);
         else if (protocol === 'http:' || protocol === 'https:')

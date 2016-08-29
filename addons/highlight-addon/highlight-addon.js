@@ -31,10 +31,10 @@ module.exports.getPreferences = function() {
             }
         },
         {
-            configKey: "HighlightStyle",
+            configKey: "HighlightStyle (Requires restart)",
             metadata: {
                 title: "Highlight Style",
-                description: "Requires restart",
+                description: "See <a href='https://highlightjs.org/static/demo/'>here</a>",
                 type: "select",
                 data: {values: styles}
             }
@@ -42,7 +42,7 @@ module.exports.getPreferences = function() {
     ];
 };
 
-module.exports.initBackend = function (webview, addonConfig, currentTheme) {
+module.exports.initBackend = function (webview, addonConfig, config) {
     const fs     = require('fs');
     const path   = require('path');
 
@@ -50,6 +50,7 @@ module.exports.initBackend = function (webview, addonConfig, currentTheme) {
     webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
 
     var highlightCss = "idea.css";
+    var currentTheme = config.Theme;
     if (currentTheme && currentTheme.indexOf("dark")>-1)
         highlightCss = "agate.css";
 

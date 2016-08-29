@@ -20,11 +20,11 @@ module.exports.initialize = function () {
     });
 };
 
-module.exports.initBackend = function(webview, config) {
+module.exports.initBackend = function(webview, settingsClient) {
     for (var addonFile in addOns) {
         var addon = addOns[addonFile];
         if (addon.initBackend)
-            addon.initBackend(webview, config.addons[addon.addonName()], config.Theme);
+            addon.initBackend(webview, settingsClient.forAddon(addon.addonName()), settingsClient.forAddon("main"));
     }
 };
 

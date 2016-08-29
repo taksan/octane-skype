@@ -29,8 +29,8 @@ module.exports = {
                 type: "boolean"
             },
             Theme: {
-                title: "Theme",
-                description: "Requires restart",
+                title: "Theme (Requires restart)",
+                description: "",
                 type: "select",
                 data: {
                     values : themeManager.getThemeList()

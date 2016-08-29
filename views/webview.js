@@ -11,7 +11,7 @@ addOns.initialize(skypeView, octaneApp);
 skypeView.addEventListener('did-navigate', () => {
     var theme = settingsClient.forAddon("main").Theme;
     themes.load(skypeView, theme);
-    addOns.initBackend(skypeView, settingsClient.forAddon("main"));
+    addOns.initBackend(skypeView, settingsClient);
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {
@@ -33,14 +33,14 @@ skypeView.addEventListener('did-fail-load', function(event) {
     electron.ipcRenderer.send('log', 'Failed to load: ' + JSON.stringify(event));
 });
 
+skypeView.addEventListener('console-message', (e) =>
+    console.log('Guest page logged a message:', e.message)
+);
+
 electron.ipcRenderer.on('main-window-focused', () => {
     skypeView.focus();
     skypeView.send('main-window-focused', null);
 });
-
-skypeView.addEventListener('console-message', (e) =>
-    console.log('Guest page logged a message:', e.message)
-);
 
 electron.ipcRenderer.on("status-change", function(event, status) {
     // default to idle if status not found
