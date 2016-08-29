@@ -1,3 +1,6 @@
+const fs     = require('fs');
+const path   = require('path');
+
 var isInitialized = false;
 
 module.exports.addonName = function() {
@@ -5,15 +8,11 @@ module.exports.addonName = function() {
 };
 
 function styleFolder(style) {
-    const path   = require('path');
-    if (!style)
-        style = "";
+    if (!style) style = "";
     return path.join(__dirname, '..', '..', "node_modules","highlight.js","styles",style);
 }
 
 module.exports.getPreferences = function() {
-    const fs     = require('fs');
-
     var styles = [];
 
     let stylesFolder = styleFolder();
@@ -31,10 +30,27 @@ module.exports.getPreferences = function() {
             }
         },
         {
-            configKey: "HighlightStyle (Requires restart)",
+            configKey: "HighlightStyle",
             metadata: {
                 title: "Highlight Style",
-                description: "See <a href='https://highlightjs.org/static/demo/'>here</a>",
+                description: `<b>Sample:</b>
+<pre id="highlight-sample-code">
+function $initHighlight(block, cls) {
+  try {
+    if (cls.search(/\bno\-highlight\b/) != -1)
+      return process(block, true, 0x0F);
+  } catch (e) {
+    /* handle exception */
+  }
+  for (var i = 0 / 2; i < classes.length; i++) {
+    if (checkCondition(classes[i]) === undefined)
+      console.log('undefined');
+  }
+}
+export  $initHighlight;
+</pre>
+<script>highlightSample()</script>
+`,
                 type: "select",
                 data: {values: styles}
             }
@@ -42,25 +58,23 @@ module.exports.getPreferences = function() {
     ];
 };
 
-module.exports.initBackend = function (webview, addonConfig, config) {
-    const fs     = require('fs');
-    const path   = require('path');
-
+module.exports.initBackend = function (webview) {
     var defaultCssFile = path.join(__dirname, "highlight-default.css");
     webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
-
-    var highlightCss = "idea.css";
-    var currentTheme = config.Theme;
-    if (currentTheme && currentTheme.indexOf("dark")>-1)
-        highlightCss = "agate.css";
-
-    //noinspection JSUnresolvedVariable
-    highlightCss = addonConfig.HighlightStyle? addonConfig.HighlightStyle : highlightCss;
-    var stylePath = styleFolder(highlightCss);
-    webview.insertCSS(preprocessCss(fs.readFileSync(stylePath, 'utf8')));
 };
 
+function loadStyle(highlightCss) {
+    if (!highlightCss)
+        highlightCss = "idea.css";
+
+    var stylePath = styleFolder(highlightCss);
+    return preprocessCss(fs.readFileSync(stylePath, 'utf8'));
+}
+
 module.exports.initUi = function (addonConfig) {
+    const $           = require('../../node_modules/jquery/dist/jquery.min.js');
+    const highlightJs = require('./highlight.min.js');
+
     //noinspection JSUnresolvedVariable
     var isHighlightingEnabled = addonConfig.HighlightEnabled;
     if (!isHighlightingEnabled)
@@ -71,11 +85,25 @@ module.exports.initUi = function (addonConfig) {
 
     isInitialized = true;
 
+    window.highlightSample = function() {
+        //noinspection JSUnresolvedFunction
+        highlightJs.highlightBlock(document.getElementById("highlight-sample-code"));
+    };
+
+    $("head").append("<style type='text/css' id='highlight-code'></style>");
+
+    //noinspection JSUnresolvedVariable
+    document.querySelector("#highlight-code").innerHTML=loadStyle(addonConfig.HighlightStyle);
+
+    addonConfig.observe("HighlightStyle", function (value) {
+        document.querySelector("#highlight-code").innerHTML=loadStyle(value);
+    });
+
+    // this hack prevents skype from messing up with your pasted text; leave other kinds of data alone
     EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
     EventTarget.prototype.addEventListener = function(type, listener)
     {
         if(!this.EventList) { this.EventList = []; }
-        // this hack prevents skype from messing up with your pasted text; leave other kinds of data alone
         if (type == "paste" && this.name == "messageInput") {
             var dontScrewPlainText = function(evt) {
                 if (evt.clipboardData.types.indexOf("text/plain")>-1)
@@ -88,7 +116,6 @@ module.exports.initUi = function (addonConfig) {
         this.addEventListenerBase.apply(this, arguments);
     };
 
-    var highlightJs = require('./highlight.min.js');
     var lastUpdatedCodeBlockAddedClass = null;
     function doHighlightBlock(aBlock, anObserver) {
         // temporarily disconnects the observer to prevent the highlighting from triggering mutation events

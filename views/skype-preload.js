@@ -20,27 +20,33 @@ ipc.on('main-window-focused', function () {
         window.document.querySelector("textarea").focus();
 });
 
+var mainWindowLoadedInitialized = false;
 ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
-    console.log("main-window-loaded 1")
-    var sidebar = document.querySelector("swx-sidebar");
-    if (!sidebar) return;
-    console.log("main-window-loaded 2")
+    if (mainWindowLoadedInitialized) return;
+    mainWindowLoadedInitialized = true;
 
-    const settingsClient = require("./settings-client");
-    settingsClient.initialize(settingsJson);
+    new MutationObserver((record, docObserver) => {
+        var sidebar = document.querySelector("swx-sidebar");
+        if (!sidebar) return;
 
-    var observer = new MutationObserver(() => updateNotificationCount());
-    observer.observe(sidebar, {subtree: true, childList: true});
+        const settingsClient = require("./settings-client");
+        settingsClient.initialize(settingsJson);
 
-    addOnList.forEach(function (addOn) {
-        try {
-            var addonModule = require(addOn);
-            addonModule.initUi(settingsClient.forAddon(addonModule.addonName()), settingsClient);
-        } catch (err) {
-            console.error("Failed to load AddOn : " + addOn);
-            console.error(err);
-        }
-    });
+        new MutationObserver(() => updateNotificationCount())
+            .observe(sidebar, {subtree: true, childList: true});
+
+        addOnList.forEach(function (addOn) {
+            try {
+                var addonModule = require(addOn);
+                addonModule.initUi(settingsClient.forAddon(addonModule.addonName()), settingsClient);
+            } catch (err) {
+                console.error("Failed to load AddOn : " + addOn);
+                console.error(err);
+            }
+        });
+        mainWindowLoadedInitialized = true;
+        docObserver.disconnect();
+    }).observe(document, {subtree: true, childList: true});
 });
 
 ipc.on('status-change', function(event, status) {

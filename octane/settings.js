@@ -99,4 +99,7 @@ module.exports = {
         module.exports.saveConfiguration();
     }
 };
-ipcMain.on("settings-update", (e, addon, configKey, value)=>module.exports.settingsUpdate(addon, configKey, value));
+ipcMain.on("settings-update", (e, addon, configKey, value)=>{
+    module.exports.settingsUpdate(addon, configKey, value);
+    if (configKey != "AutoStart") e.returnValue = { success: true };
+});

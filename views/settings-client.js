@@ -6,17 +6,40 @@ module.exports.initialize = function(settingsJson) {
     settings = JSON.parse(settingsJson);
 };
 
+var changeListener = [];
 module.exports.forAddon = function(addon) {
     var handler = {
         get: function(target, name){
+            if (name == "observe")
+                return target.observe;
+
             if (addon == "main")
-                return settings.config[name];
+                return target[name];
             else
-                return settings.config.addons[addon][name];
+                return target.addons[addon][name];
+        },
+        set: function(target, name, value){
+            if (addon == "main")
+                target[name] = value;
+            else
+                target.addons[addon][name] = value;
+
+            changeListener.forEach(function(listener){
+                if (listener.addon == addon && listener.attribute == name) {
+                    listener.callback(value);
+                }
+            });
         }
     };
+    settings.config.observe = function (attribute, fn) {
+        changeListener.push({
+            addon: addon,
+            attribute: attribute,
+            callback: fn
+        });
+    };
 
-    return new Proxy({}, handler);
+    return new Proxy(settings.config, handler);
 };
 
 module.exports.forEachAddon = function(fn) {
@@ -26,8 +49,8 @@ module.exports.forEachAddon = function(fn) {
         fn(new AddOn(addOnName, settings.metadata.addons[addOnName], settings.config.addons[addOnName]));
 };
 
-function AddOn(name, metadata, config) {
-    this.name = name;
+function AddOn(addonName, metadata, config) {
+    this.name = addonName;
 
     this.forEachDefinition = function (fn) {
         for (var defName in metadata) {
@@ -39,16 +62,13 @@ function AddOn(name, metadata, config) {
     };
 
     this.update = function(key, value) {
-        var res = ipc.sendSync("settings-update", name, key, value);
+        var res = ipc.sendSync("settings-update", addonName, key, value);
         if (!res.success) {
             alert(res.message);
             return false;
         }
-
-        if (name == "main")
-            settings.config[key] = value;
-        else
-            settings.config.addons[name][key] = value;
+        var config = module.exports.forAddon(addonName);
+        config[key] = value;
         return true;
     }
 }
