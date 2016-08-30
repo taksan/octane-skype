@@ -1,16 +1,13 @@
 const fs     = require('fs');
 const path   = require('path');
 
-var isInitialized = false;
+module.exports.dependsOnElement = function() {
+    return ".chatContainer";
+};
 
 module.exports.addonName = function() {
     return "highlight-addon";
 };
-
-function styleFolder(style) {
-    if (!style) style = "";
-    return path.join(__dirname, '..', '..', "node_modules","highlight.js","styles",style);
-}
 
 module.exports.getPreferences = function() {
     var styles = [];
@@ -63,14 +60,6 @@ module.exports.initBackend = function (webview) {
     webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
 };
 
-function loadStyle(highlightCss) {
-    if (!highlightCss)
-        highlightCss = "idea.css";
-
-    var stylePath = styleFolder(highlightCss);
-    return preprocessCss(fs.readFileSync(stylePath, 'utf8'));
-}
-
 module.exports.initUi = function (addonConfig) {
     const $           = require('../../node_modules/jquery/dist/jquery.min.js');
     const highlightJs = require('./highlight.min.js');
@@ -79,11 +68,6 @@ module.exports.initUi = function (addonConfig) {
     var isHighlightingEnabled = addonConfig.HighlightEnabled;
     if (!isHighlightingEnabled)
         return;
-
-    if (isInitialized)
-        return;
-
-    isInitialized = true;
 
     window.highlightSample = function() {
         //noinspection JSUnresolvedFunction
@@ -99,38 +83,26 @@ module.exports.initUi = function (addonConfig) {
         document.querySelector("#highlight-code").innerHTML=loadStyle(value);
     });
 
-    // this hack prevents skype from messing up with your pasted text; leave other kinds of data alone
-    EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
-    EventTarget.prototype.addEventListener = function(type, listener)
-    {
-        if(!this.EventList) { this.EventList = []; }
-        if (type == "paste" && this.name == "messageInput") {
-            var dontScrewPlainText = function(evt) {
-                if (evt.clipboardData.types.indexOf("text/plain")>-1)
-                    return;
-                listener.apply(this, arguments);
-            };
-            this.addEventListenerBase.apply(this, ["paste", dontScrewPlainText, false]);
-            return;
-        }
-        this.addEventListenerBase.apply(this, arguments);
-    };
+    protectPastedCode(arguments);
 
     var lastUpdatedCodeBlockAddedClass = null;
     function doHighlightBlock(aBlock, anObserver) {
         // temporarily disconnects the observer to prevent the highlighting from triggering mutation events
         anObserver.disconnect();
+
         // remove the code marker
         aBlock.innerHTML = aBlock.innerHTML.replace(/^\s*```\n?/,"");
         var b4 = aBlock.className;
         highlightJs.highlightBlock(aBlock);
         lastUpdatedCodeBlockAddedClass = aBlock.className.replace(b4,'');
+
+        // reactivate observer
         anObserver.observe(document.querySelector(".chatContainer"), {subtree: true, childList: true});
     }
 
-    // observe chat changes to highlight texts that start with @@
+    // observe chat changes to highlight texts that starts with ```
     var lastUpdatedCodeBlock = null;
-    var observer = new MutationObserver(function (mutations) {
+    new MutationObserver(function (mutations, observer) {
         if (!addonConfig.HighlightEnabled)
             return;
 
@@ -155,7 +127,7 @@ module.exports.initUi = function (addonConfig) {
                 }
             }, 1);
         });
-        // handles the issue the child content may trigger a new update and screw the highlighting
+        // handles the issue where the child content may trigger a new update and screw the highlighting
         if (parentCodeBlock && parentCodeBlock == lastUpdatedCodeBlock) {
             setTimeout(function() {
                 // removes the highlight and code class to make sure highlight.js will detect the correct language
@@ -164,11 +136,41 @@ module.exports.initUi = function (addonConfig) {
             }, 1);
             observer.disconnect();
         }
-    });
-    if (document.querySelector(".chatContainer"))
-        observer.observe(document.querySelector(".chatContainer"), {subtree: true, childList: true});
+    }).observe(document.querySelector(".chatContainer"), {subtree: true, childList: true});
 };
 
+function styleFolder(style) {
+    if (!style) style = "";
+    return path.join(__dirname, '..', '..', "node_modules","highlight.js","styles",style);
+}
+
+function loadStyle(highlightCss) {
+    if (!highlightCss)
+        highlightCss = "idea.css";
+
+    var stylePath = styleFolder(highlightCss);
+    return preprocessCss(fs.readFileSync(stylePath, 'utf8'));
+}
+
+// this hack prevents skype from messing up with your pasted text; leave other kinds of data alone
+function protectPastedCode() {
+    EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function (type, listener) {
+        if (!this.EventList) {
+            this.EventList = [];
+        }
+        if (type == "paste" && this.name == "messageInput") {
+            var dontScrewPlainText = function (evt) {
+                if (evt.clipboardData.types.indexOf("text/plain") > -1)
+                    return;
+                listener.apply(this, arguments);
+            };
+            this.addEventListenerBase.apply(this, ["paste", dontScrewPlainText, false]);
+            return;
+        }
+        this.addEventListenerBase.apply(this, arguments);
+    };
+}
 
 function preprocessCss(cssText) {
     // makes sure all colors in highlight.js css override skype colors
