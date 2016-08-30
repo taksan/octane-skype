@@ -38,7 +38,6 @@ var OctaneSkype = {
 
         octaneWindow.loadURL(`file://${__dirname}/../views/index.html`);
 
-        ipcMain.on("unseen-chat-changed", (e,count) => trayIcon.setNotificationCount(count));
         ipcMain.on("focus", (e,count) => OctaneSkype.show());
 
         ipcMain.on("settings-update", (evt, addon, configKey, value)=> {

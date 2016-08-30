@@ -36,10 +36,23 @@ module.exports.initUi = function () {
         if ($elem.length) {
             ipc.sendToHost('open-link', $elem.prop('href'));
         }
-        // else {
-        //     ipc.sendToHost('open-link', $(event.target).prop('href'));
-        // }
     });
+
+    new MutationObserver(function(mutationRecord, observer) {
+        if (!document.querySelector(".Avatar--presence"))
+            return;
+        observer.disconnect();
+        new MutationObserver(function() {
+            var classes = document.querySelector(".Avatar--presence").className;
+            var state = classes.replace(/.*(unknown|online|idle|donotdisturb|offline).*/,"$1")
+                .replace("donotdisturb","dnd")
+                .replace("offline","hidden")
+                .replace("unknown","online");
+
+            console.log("State changed to " + state);
+            ipc.send('state-changed', state);
+        }).observe(document.querySelector(".Avatar--presence"), {attributes: true})
+    }).observe(document, {subtree: true, childList: true});
 };
 
 module.exports.initBackend = function(webview, addonSettings, config) {

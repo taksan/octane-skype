@@ -2,6 +2,7 @@ const electron      = require('electron');
 const Canvas        = require('canvas');
 const path          = require('path');
 const fs            = require('fs');
+const ipcMain       = electron.ipcMain;
 
 const nativeImage   = electron.nativeImage;
 let trayIcon        = null;
@@ -22,6 +23,8 @@ exports.initialize = function(instance) {
 
     trayIcon.on('click', octaneInstance.toggleOpen);
     trayIcon.setContextMenu(contextMenu);
+    ipcMain.on("unseen-chat-changed", (e,count) => exports.setNotificationCount(count));
+    ipcMain.on("state-changed", (e,state) =>exports.updateState(state));
 };
 
 exports.setNotificationCount = function(count) {
@@ -30,6 +33,12 @@ exports.setNotificationCount = function(count) {
 
     drawTrayIcon(count);
     lastCount = count;
+};
+
+exports.updateState = function (state) {
+    logo = new Canvas.Image;
+    logo.src = fs.readFileSync(`${basePath}skype-${state}.png`);
+    drawTrayIcon(lastCount);
 };
 
 function drawTrayIcon(count)
