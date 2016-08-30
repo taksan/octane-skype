@@ -5,7 +5,6 @@ var caseMatches = false;
 var previousSearchTerm = null;
 var previousSearchIndex=0;
 var allMatches=[];
-var isInitialized = false;
 
 module.exports.addonName = function() {
     return "search-addon";
@@ -19,11 +18,11 @@ module.exports.initBackend = function (webview) {
     webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
 };
 
-module.exports.initUi = function()
-{
-    if (isInitialized) return;
-    isInitialized = true;
+module.exports.dependsOnElement = function() {
+    return ".chatContainer";
+};
 
+module.exports.initUi = function() {
     document.addEventListener('keyup', function(e) {
         if (e.ctrlKey && e.keyCode == 70) { //CTRL+F
             openFindBox();

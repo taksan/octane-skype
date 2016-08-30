@@ -1,19 +1,16 @@
-const ipc = require('electron').ipcRenderer;
-$ = require('../../node_modules/jquery/dist/jquery.min.js');
+const $ = require('../../node_modules/jquery/dist/jquery.min.js');
 
-var isInitialized = false;
 module.exports.addonName = function () {
     return "settings-page-addon";
 };
 
-module.exports.initUi = function (addonConfig, settings) {
-    if (isInitialized) return;
-    var navigation = document.querySelector("swx-navigation");
-    if (!navigation)
-        return;
-    isInitialized = true;
+module.exports.dependsOnElement = function() {
+    return "swx-navigation";
+};
 
-    var observer = new MutationObserver(() => {
+module.exports.initUi = function (addonConfig, settings) {
+    var navigation = document.querySelector("swx-navigation");
+    new MutationObserver(() => {
         if ($(".UserSettingsPage").size() == 0)
             return;
 
@@ -27,14 +24,9 @@ module.exports.initUi = function (addonConfig, settings) {
                 "</li>" +
                 "</ul>")
         );
-        $("#octane-settings").find("a").click(function() {
-            openOctaneSettings(settings)
-        });
-        $(".UserSettingsPage-list:first").click(function() {
-            $("#octane-settings").find("a").removeClass("active");
-        })
-    });
-    observer.observe(navigation, {subtree: true, childList: true});
+        $("#octane-settings").find("a").click(() => openOctaneSettings(settings));
+        $(".UserSettingsPage-list:first").click(() => $("#octane-settings").find("a").removeClass("active"));
+    }).observe(navigation, {subtree: true, childList: true});
 };
 
 function openOctaneSettings(settings) {

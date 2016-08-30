@@ -1,14 +1,10 @@
 $ = require('../../node_modules/jquery/dist/jquery.min.js');
 
-var isInitialized = false;
 module.exports.addonName = function () {
     return "keybindings-addon";
 }
 
 module.exports.initUi = function () {
-    if (isInitialized) return;
-    isInitialized = true;
-
     document.addEventListener('keyup', function (e) {
         if (e.altKey) {
             switch (e.keyCode) {

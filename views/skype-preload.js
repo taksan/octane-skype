@@ -9,11 +9,6 @@ window.focus = function() {
     previousFocus.apply(this, arguments)
 };
 
-function updateNotificationCount() {
-    var unreadCount = document.querySelectorAll(".unseenNotifications").length;
-    ipc.send('unseen-chat-changed', unreadCount);
-}
-
 ipc.on('main-window-focused', function () {
     // focus message textarea whenever the window comes up
     if (window.document.querySelector("textarea"))
@@ -25,28 +20,29 @@ ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
     if (mainWindowLoadedInitialized) return;
     mainWindowLoadedInitialized = true;
 
-    new MutationObserver((record, docObserver) => {
-        var sidebar = document.querySelector("swx-sidebar");
-        if (!sidebar) return;
+    const settingsClient = require("./settings-client");
+    settingsClient.initialize(settingsJson);
 
-        const settingsClient = require("./settings-client");
-        settingsClient.initialize(settingsJson);
+    const whenAvailable = require('../octane/utils').whenAvailable;
 
-        new MutationObserver(() => updateNotificationCount())
-            .observe(sidebar, {subtree: true, childList: true});
+    addOnList.forEach(function (addOn) {
+        try {
+            var addonModule = require(addOn);
+            console.log("about to initialize addon : " + addOn);
+            var addonConfig = settingsClient.forAddon(addonModule.addonName());
+            if (addonModule.dependsOnElement)
+                whenAvailable(addonModule.dependsOnElement())
+                    .done(()=>
+                    addonModule.initUi(addonConfig, settingsClient))
+            else
+                addonModule.initUi(addonConfig, settingsClient);
 
-        addOnList.forEach(function (addOn) {
-            try {
-                var addonModule = require(addOn);
-                addonModule.initUi(settingsClient.forAddon(addonModule.addonName()), settingsClient);
-            } catch (err) {
-                console.error("Failed to load AddOn : " + addOn);
-                console.error(err);
-            }
-        });
-        mainWindowLoadedInitialized = true;
-        docObserver.disconnect();
-    }).observe(document, {subtree: true, childList: true});
+            console.log("completed: " + addOn);
+        } catch (err) {
+            console.error("Failed to load AddOn : " + addOn);
+            console.error(err);
+        }
+    });
 });
 
 ipc.on('status-change', function(event, status) {
