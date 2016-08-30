@@ -42,6 +42,10 @@ electron.ipcRenderer.on('main-window-focused', () => {
     skypeView.send('main-window-focused', null);
 });
 
+electron.ipcRenderer.on('show-settings', () => {
+    skypeView.send('show-settings', null);
+});
+
 electron.ipcRenderer.on("status-change", function(event, status) {
     // default to idle if status not found
     if (status != "online" && status != "idle" && status != "dnd" && status != "hidden")

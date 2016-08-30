@@ -82,6 +82,10 @@ let contextMenu = new electron.Menu.buildFromTemplate([
         click: () => octaneInstance.show()
     },
     {
+        label: "Settings",
+        click: () => octaneInstance.showSettings()
+    },
+    {
         label: "Online",
         icon:`${basePath}skype-online.png`,
         click: () => octaneInstance.statusChange("online")

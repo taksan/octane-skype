@@ -112,6 +112,12 @@ var OctaneSkype = {
         octaneWindow.focus();
     },
 
+    showSettings: function () {
+        this.show();
+        OctaneSkype.sendIpc("show-settings");
+
+    },
+
     statusChange : function(status) {
         octaneWindow.webContents.send("status-change", status)
     },

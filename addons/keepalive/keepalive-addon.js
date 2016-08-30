@@ -49,10 +49,23 @@ module.exports.initUi = function () {
                 .replace("offline","hidden")
                 .replace("unknown","online");
 
-            console.log("State changed to " + state);
             ipc.send('state-changed', state);
         }).observe(document.querySelector(".Avatar--presence"), {attributes: true})
     }).observe(document, {subtree: true, childList: true});
+
+    ipc.on("show-settings", function () {
+        document.querySelector(".settings").click();
+        new MutationObserver(function(record, observer){
+            if (!document.querySelector("#octane-settings a"))
+                return;
+
+            observer.disconnect();
+            setTimeout(function() {
+                document.querySelector("#octane-settings a").click();
+            }, 10);
+
+        }).observe(document.querySelector("swx-navigation"), {subtree:true,childList:true});
+    });
 };
 
 module.exports.initBackend = function(webview, addonSettings, config) {
