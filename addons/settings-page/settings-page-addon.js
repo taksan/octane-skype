@@ -1,4 +1,4 @@
-const $ = require('../../node_modules/jquery/dist/jquery.min.js');
+const $ = require('jquery');
 
 module.exports.addonName = function () {
     return "settings-page-addon";

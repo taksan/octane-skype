@@ -3,7 +3,7 @@ const ipc      = electron.ipcRenderer;
 const url      = require('url');
 const whenAvailable = require('../../octane/utils').whenAvailable;
 
-$ = require('../../node_modules/jquery/dist/jquery.min.js');
+$ = require('jquery');
 
 const refreshInterval = 300000;
 

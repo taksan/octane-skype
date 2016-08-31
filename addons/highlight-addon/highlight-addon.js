@@ -1,5 +1,7 @@
-const fs     = require('fs');
-const path   = require('path');
+const fs          = require('fs');
+const path        = require('path');
+const $           = require('jquery');
+const highlightJs = require('highlight.js');
 
 module.exports.dependsOnElement = function() {
     return ".chatContainer";
@@ -61,8 +63,6 @@ module.exports.initBackend = function (webview) {
 };
 
 module.exports.initUi = function (addonConfig) {
-    const $           = require('../../node_modules/jquery/dist/jquery.min.js');
-    const highlightJs = require('./highlight.min.js');
 
     //noinspection JSUnresolvedVariable
     var isHighlightingEnabled = addonConfig.HighlightEnabled;
