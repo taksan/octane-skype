@@ -7,7 +7,7 @@ const ipcMain       = electron.ipcMain;
 const nativeImage   = electron.nativeImage;
 let trayIcon        = null;
 let octaneInstance  = null;
-let basePath        = __dirname + '/../assets/tray/';
+let basePath        = electron.app.getAppPath() + '/assets/tray/';
 let lastCount       = 0;
 let logo            = null;
 

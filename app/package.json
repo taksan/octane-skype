@@ -1,0 +1,33 @@
+{
+  "name": "octane-skype",
+  "version": "1.0.0",
+  "productName": "Octane-Skype",
+  "description": "Web Skype With Addons Support. Tray + Highlight + Search",
+  "private": true,
+  "main": "octane/main.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "npm rebuild --runtime=electron --target=1.3.4 --disturl=https://atom.io/download/atom-shell --abi=49"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taksan/octane-skype.git"
+  },
+  "keywords": [
+    "web",
+    "skype",
+    "unofficial"
+  ],
+  "author": "Gabriel Takeuchi <g.takeuchi@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/taksan/octane-octane/issues"
+  },
+  "homepage": "https://github.com/taksan/octane-octane#readme",
+  "dependencies": {
+    "stylus": "^0.54.5",
+    "jquery": "2.2.3",
+    "highlight.js": "9.6.0",
+    "canvas": "1.4.0"
+  }
+}
