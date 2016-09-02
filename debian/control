@@ -1,0 +1,13 @@
+Source: octane
+Section: lisp
+Priority: optional
+Maintainer: Gabriel Takeuchi <g.takeuchi@gmail.com>
+Build-Depends: debhelper (>= 9),rsync, python
+Standards-Version: 3.9.6
+Homepage: https://github.com/taksan/octane-skype
+
+Package: octane
+Architecture: all
+Depends: libappindicator1, libnotify-bin
+Description: 
+ Web Skype with several features Tray + Highlight + Search
