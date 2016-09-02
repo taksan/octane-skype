@@ -1,5 +1,4 @@
 const electron  = require('electron');
-const themes    = require('../octane/themeManager');
 const addOns    = require('../octane/addOnManager');
 const octaneApp = electron.remote.require('../octane/Octane');
 const skypeView = document.getElementById('skype-view');
@@ -9,8 +8,6 @@ settingsClient.initialize(JSON.stringify(octaneApp.settings()));
 addOns.initialize(skypeView, octaneApp);
 
 skypeView.addEventListener('did-navigate', () => {
-    var theme = settingsClient.forAddon("main").Theme;
-    themes.load(skypeView, theme);
     addOns.initBackend(skypeView, settingsClient);
 });
 

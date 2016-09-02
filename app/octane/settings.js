@@ -29,7 +29,7 @@ module.exports = {
                 type: "boolean"
             },
             Theme: {
-                title: "Theme (Requires restart)",
+                title: "Theme",
                 description: "",
                 type: "select",
                 data: {

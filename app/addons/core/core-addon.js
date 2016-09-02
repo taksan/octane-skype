@@ -11,7 +11,8 @@ module.exports.addonName = function () {
     return "core-addon";
 };
 
-module.exports.initUi = function () {
+module.exports.initUi = function (addonConfig, settingsClient) {
+    themeLoader(settingsClient.forAddon("main"));
     keepAlive();
     userStatusWatcher();
     handleShowSettingsIpc();
@@ -32,6 +33,42 @@ module.exports.initBackend = function(webview, addonSettings, config) {
             electron.shell.openExternal(href);
     });
 };
+
+function themeLoader(addonConfig) {
+    $("head").append("<style type='text/css' id='skype-theme'></style>");
+    loadTheme(addonConfig.Theme);
+    addonConfig.observe("Theme", (value)=>loadTheme(value))
+
+}
+
+function loadTheme(theme)
+{
+    if (theme == "") {
+        document.querySelector("#skype-theme").innerHTML="";
+        return;
+    }
+    const fs     = require('fs');
+    const path   = require('path');
+    const stylus = require('stylus');
+
+    let folder = path.join(__dirname, '../..', 'themes', theme);
+    let p = path.join(folder, 'skype.styl');
+    fs.readFile(p, 'utf8', (err, styl) => {
+        if (err) {
+            console.error("Error loading theme." + err);
+            return;
+        }
+        stylus(styl)
+            .include(folder)
+            .render((err, css) => {
+                if (err) {
+                    console.error("Error loading theme." + err);
+                    return;
+                }
+                document.querySelector("#skype-theme").innerHTML=css;
+            });
+    });
+}
 
 function keepAlive() {
     var isIdle = true;

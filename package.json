@@ -17,7 +17,8 @@
     },  
     "dmg": {
       "icon": "resources/osx/dmg-icon.icns"
-    }
+    },
+	"npmRebuild": false
   }, 
   "scripts": {
     "postinstall": "install-app-deps",
