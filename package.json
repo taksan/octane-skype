@@ -21,7 +21,7 @@
 	"npmRebuild": false
   }, 
   "scripts": {
-    "postinstall": "install-app-deps",
+    "postinstall": "install-app-deps && cd app && npm install",
     "start": "electron app",
     "release": "build --x64 --publish never"
   },
