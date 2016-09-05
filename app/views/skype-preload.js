@@ -28,13 +28,12 @@ ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
     addOnList.forEach(function (addOn) {
         try {
             var addonModule = require(addOn);
-            var addonConfig = settingsClient.forAddon(addonModule.addonName());
             if (addonModule.dependsOnElement)
                 whenAvailable(addonModule.dependsOnElement())
                     .done(()=>
-                    addonModule.initUi(addonConfig, settingsClient))
+                    addonModule.initUi(settingsClient.forAddon(addonModule.addonName()), settingsClient));
             else
-                addonModule.initUi(addonConfig, settingsClient);
+                addonModule.initUi(settingsClient.forAddon(addonModule.addonName()), settingsClient);
 
         } catch (err) {
             console.error("Failed to load AddOn : " + addOn);
