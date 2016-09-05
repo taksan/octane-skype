@@ -14,7 +14,7 @@ install:
 	pwd
 	rsync -r -t -v --progress /tmp/octane_extracted/ -c -l -z debian/octane-skype
 
-build-and-transfer: build-source-release transfer-to-ppa
+build-and-transfer: build-source-release push
 
 build-source-release:
 	./perform-linux-release.sh
