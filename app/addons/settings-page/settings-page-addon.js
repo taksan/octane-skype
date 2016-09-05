@@ -126,7 +126,7 @@ const typeInfo = {
                 selectOptions += `<option value="${anOption.value}" ${selected}>${anOption.label}</option>\n`
             });
             return `<li class="UserSettingsPage-option pref-template-select">
-                    <h2 class="pref-toggle-heading UserSettingsPage-featureLabel">${definition.title}</h2>
+                    <h2 class="pref-heading UserSettingsPage-featureLabel">${definition.title}</h2>
                     <div>
                         <div class="pref-select-element">
                             <select id="${id}">
