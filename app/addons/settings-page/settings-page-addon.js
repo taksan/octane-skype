@@ -126,16 +126,16 @@ const typeInfo = {
                 selectOptions += `<option value="${anOption.value}" ${selected}>${anOption.label}</option>\n`
             });
             return `<li class="UserSettingsPage-option pref-template-select">
-                    <h2 class="pref-heading UserSettingsPage-featureLabel">${definition.title}</h2>
-                    <div>
-                        <div class="pref-select-element">
-                            <select id="${id}">
-                                ${selectOptions}
-                             </select>
+                        <h2 class="pref-heading UserSettingsPage-featureLabel">${definition.title}</h2>
+                        <div>
+                            <div class="pref-select-element">
+                                <select id="${id}">
+                                    ${selectOptions}
+                                 </select>
+                            </div>
                         </div>
-                    </div>
-                    <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>
-                </li>`
+                        <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>
+                    </li>`
         },
         addChangeHandler: function(addon, defName) {
             $("#" + addon.name+"_" + defName).change(function () {
