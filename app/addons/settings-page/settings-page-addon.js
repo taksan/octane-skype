@@ -1,4 +1,6 @@
-const $ = require('jquery');
+const path = require('path');
+const fs   = require('fs');
+const $    = require('jquery');
 
 module.exports.addonName = function () {
     return "settings-page-addon";
@@ -10,6 +12,12 @@ module.exports.dependsOnElement = function() {
 
 module.exports.initUi = function (addonConfig, settings) {
     var navigation = document.querySelector("swx-navigation");
+
+    $("head").append("<style type='text/css' id='settings-page-addon-styles'></style>");
+
+    var defaultCssFile = path.join(__dirname, "settings-page.css");
+    document.querySelector("#settings-page-addon-styles").innerHTML=fs.readFileSync(defaultCssFile, 'utf8');
+
     new MutationObserver(() => {
         if ($(".UserSettingsPage").size() == 0)
             return;
@@ -18,12 +26,11 @@ module.exports.initUi = function (addonConfig, settings) {
             return;
 
         $(".UserSettingsPage-list").after(
-            $(  "<ul>" +
-                "<li role='option' id='octane-settings'>" +
-                "<a href='#' class='UserSettingsPage-category'><h2 class='UserSettingsPage-label about'>Octane</h2></a>" +
-                "</li>" +
-                "</ul>")
-        );
+            $(`<ul>
+                <li role='option' id='octane-settings'>
+                    <a href='#' class='UserSettingsPage-category'><h2 class='UserSettingsPage-label about'>Octane</h2></a>
+                </li>
+               </ul>`));
         $("#octane-settings").find("a").click(() => openOctaneSettings(settings));
         $(".UserSettingsPage-list:first").click(() => $("#octane-settings").find("a").removeClass("active"));
     }).observe(navigation, {subtree: true, childList: true});
@@ -34,22 +41,39 @@ function openOctaneSettings(settings) {
     $("#octane-settings").find("a").addClass("active");
     $(".UserSettingsPage-detail .UserSettingsPage-heading").html("Octane Settings");
 
-    $(".UserSettingsPage-scroll-area .scrollViewport").html(
-        '<ul class="UserSettingsPage-list"></ul>');
-
+    $(".UserSettingsPage-scroll-area .scrollViewport").html(`<div class="UserSettingsPage-Tab-List"></div>`);
+    var $userSettingsTablist = $(".UserSettingsPage-Tab-List");
+    var selected = false;
     settings.forEachAddon(function(addon) {
-        $(".UserSettingsPage-scroll-area .scrollViewport ul").append(
-            `<li><h1 class="UserSettingsPage-heading">${addon.name} preferences</h1></li>`
-        );
-        setupComponents(addon);
+        var title = addon.name.replace("-addon", "");
+        var $tabElem = $(`<a class="UserSettingsPage-category PreferencesTab"> ${title} </a>`);
+        $userSettingsTablist.append($tabElem);
+
+        var $addonUl = $(`<ul class="UserSettingsPage-list AddonPreferences ${addon.name}-prefs"></ul>`);
+        $addonUl.css("display", "none");
+        $(".UserSettingsPage-scroll-area .scrollViewport").append($addonUl);
+
+        addAddOnPreferences($addonUl, addon);
+
+        var selectTab = function() {
+            $(".AddonPreferences").css("display", "none");
+            $addonUl.css("display", "block");
+            $userSettingsTablist.find(".PreferencesTab").removeClass("active");
+            $tabElem.addClass("active");
+        };
+        $tabElem.click(selectTab);
+        if (!selected) {
+            selectTab();
+            selected = true;
+        }
     });
     return false;
 }
 
-function setupComponents(addon) {
+function addAddOnPreferences($addonUl, addon) {
     addon.forEachDefinition(function(definition) {
         var component = typeInfo[definition.type].makeHtml(addon.name, definition);
-        $(".UserSettingsPage-scroll-area .scrollViewport ul").append($(component));
+        $addonUl.append($(component));
         typeInfo[definition.type].addChangeHandler(addon, definition.name);
     });
 }

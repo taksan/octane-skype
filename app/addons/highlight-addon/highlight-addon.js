@@ -63,7 +63,6 @@ module.exports.initBackend = function (webview) {
 };
 
 module.exports.initUi = function (addonConfig) {
-
     //noinspection JSUnresolvedVariable
     var isHighlightingEnabled = addonConfig.HighlightEnabled;
     if (!isHighlightingEnabled)

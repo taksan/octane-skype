@@ -1,0 +1,14 @@
+.UserSettingsPage-Tab-List {
+    padding-left: 1em !important;
+}
+
+.PreferencesTab {
+    padding: .5em !important;
+    display: inline-block !important;
+    text-transform: capitalize !important;
+    min-height: 1em !important;
+}
+
+.PreferencesTab.active {
+    border-bottom: 0px;
+}
