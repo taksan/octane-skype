@@ -5,7 +5,14 @@
     font-family:    monospace;
 }
 
-#highlight-sample-code{
-    font-size: 60%;
-    width: 30em;
+.highlight-sample-code{
+    font-size: 65% !important;
+    width: 30em !important;
+    margin-bottom: 1em !important;
+}
+
+.highlight-sample-code-title {
+    margin-left: -61px !important;
+    font-size: 1.1em !important;
+    line-height: 3em !important;
 }

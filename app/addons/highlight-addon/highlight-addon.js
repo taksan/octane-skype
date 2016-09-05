@@ -18,6 +18,7 @@ module.exports.getPreferences = function() {
     fs.readdirSync(stylesFolder).forEach(function (style) {
         styles.push({value: style, label: style});
     });
+    var sampleFile = path.join(__dirname, "highlight-js-samples.html");
 
     return [
         {
@@ -32,24 +33,7 @@ module.exports.getPreferences = function() {
             configKey: "HighlightStyle",
             metadata: {
                 title: "Highlight Style",
-                description: `<b>Sample:</b>
-<pre id="highlight-sample-code">
-function $initHighlight(block, cls) {
-  try {
-    if (cls.search(/\bno\-highlight\b/) != -1)
-      return process(block, true, 0x0F);
-  } catch (e) {
-    /* handle exception */
-  }
-  for (var i = 0 / 2; i < classes.length; i++) {
-    if (checkCondition(classes[i]) === undefined)
-      console.log('undefined');
-  }
-}
-export  $initHighlight;
-</pre>
-<script>highlightSample()</script>
-`,
+                description: fs.readFileSync(sampleFile, 'utf8'),
                 type: "select",
                 data: {values: styles}
             }
@@ -70,7 +54,9 @@ module.exports.initUi = function (addonConfig) {
 
     window.highlightSample = function() {
         //noinspection JSUnresolvedFunction
-        highlightJs.highlightBlock(document.getElementById("highlight-sample-code"));
+        document.querySelectorAll(".highlight-sample-code").forEach(function(el) {
+            highlightJs.highlightBlock(el);
+        });
     };
 
     $("head").append("<style type='text/css' id='highlight-code'></style>");
