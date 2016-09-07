@@ -1,5 +1,11 @@
+octane-skype-build-assets (1.0.2-1ubuntu1) unstable; urgency=medium
+
+  * Node JS is now installed in the appropriate place in the path
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Wed, 07 Sep 2016 00:27:39 -0300
+
 octane-skype-build-assets (1.0.1-1) wily; urgency=low
 
   * Initial release
 
- -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Tue, 06 Sep 2016 07:39:05 -0300
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Tue, 06 Sep 2016 22:37:20 -0300
