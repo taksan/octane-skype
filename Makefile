@@ -4,7 +4,7 @@ INSTALLDIR=${DESTDIR}/usr/share
 all: build 
 
 build: clean
-	./install-node6.sh
+	./prepare-build-assets.sh
 	./build.sh
 
 clean:
