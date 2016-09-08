@@ -1,4 +1,10 @@
-octane-skype-build-assets (1.0.2-1ubuntu1) unstable; urgency=medium
+octane-skype-build-assets (1.0.3-1ubuntu1) wily; urgency=medium
+
+  * Previous release rejected due to wrong version specified in changelog.
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Wed, 07 Sep 2016 08:22:29 -0300
+
+octane-skype-build-assets (1.0.2-1ubuntu1) UNRELEASED; urgency=medium
 
   * Node JS is now installed in the appropriate place in the path
 
