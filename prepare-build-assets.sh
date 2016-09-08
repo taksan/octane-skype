@@ -14,9 +14,9 @@ if [[ ! -e $HOME/.cache ]]; then
 	echo "== Preparing fpm"
 	mkdir -p $HOME/.cache/fpm
 	(
-		cd $ASSETS_HOME
-		tar xJf fpm-1.5.0-2.3.1-linux-x86_64.tar.xz
-		cp fpm-1.5.0-2.3.1-linux-x86_64 $HOME/.cache/fpm
+		cd $HOME/.cache/
+		tar xJf $ASSETS_HOME/fpm-1.5.0-2.3.1-linux-x86_64.tar.xz
+		mv fpm-1.5.0-2.3.1-linux-x86_64 fpm
 	)
 fi
 echo "Build requirements setup complete"

@@ -16,14 +16,14 @@ rm -fv octane*.tar.xz *.dsc *_source.changes
 
 echo "Copy source code"
 mkdir -p src-release
-rsync -r -t -v --progress --exclude=$(basename $(pwd)) --exclude=.git --exclude=.idea ../ -c -l -z src-release
+rsync -r -t -v --progress --exclude=$(basename $(pwd)) --exclude=.git --exclude=.idea --exclude=*.xz --exclude=*zip ../ -c -l -z src-release
 
 echo "Update change log"
 cd src-release
 V=$(head -1 debian/changelog | sed 's/.*(\(.*\)).*/\1/' | sed 's/.*\.\(.*\)-1/\1/')
 V=$((V+1))
 
-LANG=C echo "octane-skype (1.0.$V-1~ubuntuppa1) wily; urgency=low
+LANG=C echo "octane-skype (1.0.6-1~ubuntuppa1) wily; urgency=low
 
   * Packaging for multiple ubuntu versions
 
@@ -42,9 +42,4 @@ echo "Pack source code to $TAR"
 tar cJf ../$TAR *
 
 echo "Prepare signatures and source changes"
-dpkg-buildpackage -S
-
-cd ..
-rm -f $DIST
-mkdir $DIST
-mv octane-skype* $DIST
+dpkg-buildpackage -S -d
