@@ -1,3 +1,7 @@
 .idea
 release-stage
 package.json
+app
+node_modules
+changes
+bogus.txt

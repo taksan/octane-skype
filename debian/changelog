@@ -1,3 +1,33 @@
+octane-skype-node-modules (1.0.2-1~ubuntuppa1) wily; urgency=low
+
+  * Makefile fix, pbuild in launchpad doesnt set DESTDIR
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Thu, 08 Sep 2016 17:50:30 -0300
+
+octane-skype-node-modules (1.0.1-1~ubuntuppa1) wily; urgency=low
+
+  * [dev changes] Fixes for package build, new package name
+
+  * [dev changes] Theme setup is dynamic now and reflects immediatly when changed
+
+  * [dev changes] Modififying structure to 2 package layout. Packaging introduced
+
+  * [dev changes] Highlight addon
+
+  * [dev changes] Some refactorings, prevent addons from breaking skype, fixed keep alive addon
+
+  * [dev changes] Addon support added. Added keybindings and keep alive support
+
+  * [dev changes] Makes the application window come up when the notifications are clicked
+
+  * [dev changes] Themes and tray icon with notification count.
+
+  * [dev changes] Minimal working version.
+
+  * [app changes] Modififying structure to 2 package layout. Packaging introduced
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Thu, 08 Sep 2016 17:03:26 -0300
+
 octane-skype-node-modules (1.0.0-1) wily; urgency=low
 
   * Adding current node modules required by octane-skype build

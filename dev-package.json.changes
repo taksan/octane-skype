@@ -1,0 +1,9 @@
+84b2b3c Fixes for package build, new package name
+28f3c0b Theme setup is dynamic now and reflects immediatly when changed
+3bafdef Modififying structure to 2 package layout. Packaging introduced
+0cc8772 Highlight addon
+192c0bf Some refactorings, prevent addons from breaking skype, fixed keep alive addon
+b1ab6d4 Addon support added. Added keybindings and keep alive support
+6892e52 Makes the application window come up when the notifications are clicked
+a9b4df3 Themes and tray icon with notification count.
+ec44294 Minimal working version.
