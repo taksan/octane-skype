@@ -1,0 +1,12 @@
+Source: octane-skype-node-modules
+Section: lisp
+Priority: optional
+Maintainer: Gabriel Takeuchi <g.takeuchi@gmail.com>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.6
+Homepage: https://github.com/taksan/octane-skype
+
+Package: octane-skype-node-modules
+Architecture: all
+Description: 
+ Node modules required to build octane skype
