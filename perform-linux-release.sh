@@ -16,16 +16,16 @@ rm -fv octane*.tar.xz *.dsc *_source.changes
 
 echo "Copy source code"
 mkdir -p src-release
-rsync -r -t -v --progress --exclude=$(basename $(pwd)) --exclude=.git --exclude=.idea --exclude=*.xz --exclude=*zip ../ -c -l -z src-release
+rsync -r -t -v --progress --exclude=$(basename $(pwd)) --exclude=.git --exclude=.idea --exclude="*.xz" --exclude="*zip" --exclude=node_modules ../ -c -l -z src-release
 
 echo "Update change log"
 cd src-release
 V=$(head -1 debian/changelog | sed 's/.*(\(.*\)).*/\1/' | sed 's/.*\.\(.*\)-1/\1/')
 V=$((V+1))
 
-LANG=C echo "octane-skype (1.0.6-1~ubuntuppa1) wily; urgency=low
+LANG=C echo "octane-skype (1.0.$V-1) wily; urgency=low
 
-  * Packaging for multiple ubuntu versions
+  * Testing with separate node modules
 
  -- Gabriel Takeuchi <g.takeuchi@gmail.com>  $(date -R)
 " | cat - ../../debian/changelog > debian/changelog
@@ -33,9 +33,6 @@ LANG=C echo "octane-skype (1.0.6-1~ubuntuppa1) wily; urgency=low
 version=$(cat debian/changelog|head -1|sed 's/.*(\(.*\)-1.*/\1/')
 echo $version
 make clean 
-if [[ ! -e node_modules || ! -e app/node_modules ]]; then
-	npm install
-fi
 
 TAR="octane-skype_${version}.orig.tar.xz"
 echo "Pack source code to $TAR"
