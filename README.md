@@ -54,10 +54,7 @@ deb-src http://ppa.launchpad.net/g-takeuchi/octane-skype/ubuntu wily main
 
 ## Code highlight
 
-Code highlight only works among other Octane Users. To highlight code, start the message with three backticks:
-````
-  ```
-````
+Code highlight only works among other Octane Users. To highlight code, start the message with three backticks ```
 
 Regular skype users will see the backticks and the text without any format.
 
