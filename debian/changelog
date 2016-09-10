@@ -1,3 +1,9 @@
+octane-skype (1.0.4-1) wily; urgency=low
+
+  * Testing with separate node modules
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sat, 10 Sep 2016 01:28:22 -0300
+
 octane-skype (1.0.3-1) wily; urgency=low
 
   * Initial release
