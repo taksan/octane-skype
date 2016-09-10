@@ -16,8 +16,8 @@ install:
 
 build-and-transfer: build-source-release push
 
-build-source-release:
-	./perform-linux-release.sh
+source-package:
+	./create-source-package.sh
 
 test-build:
 	cd release-stage; \
