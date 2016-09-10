@@ -83,18 +83,43 @@ Run npm to install application requirements:
 npm install
 ```
 
+On Windows, before runnning npm install, you must fist install windows-build-tools:
+
+npm install --global --production windows-build-tools
+
+Download GTK:
+
+    * (32-bit) - http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip
+    * (64-bit) - http://ftp.gnome.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.1-20101229_win64.zip
+
+And extract to C:\GTK
+
+If you face the following error during npm install:
+
+```
+error C2373: '__pfnDliNotifyHook2': redefinition; different type modifiers [...\canvas.vcxproj]
+```
+
+Run the following command and try npm install again:
+
+```
+npm -g install npm@next 
+```
+
+
 And to execute the application:
 
 ```
 npm start
 ```
 
-## Packaging for debian, windows and mac
-
-The following command will create the package only for the running platform:
+If you get the following error:
 
 ```
-npm run release
+Error: ENOENT: no such file or directory, open '...\electron\path.txt'
 ```
 
-The release files will be under directory *dist*.
+Remove node_modules_ and do a npm install again.
+
+## Running and Building on windows
+
