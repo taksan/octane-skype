@@ -47,11 +47,6 @@ module.exports.initBackend = function (webview) {
 };
 
 module.exports.initUi = function (addonConfig) {
-    //noinspection JSUnresolvedVariable
-    var isHighlightingEnabled = addonConfig.HighlightEnabled;
-    if (!isHighlightingEnabled)
-        return;
-
     window.highlightSample = function() {
         //noinspection JSUnresolvedFunction
         document.querySelectorAll(".highlight-sample-code").forEach(function(el) {
