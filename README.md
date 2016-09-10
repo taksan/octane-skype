@@ -118,5 +118,3 @@ Error: ENOENT: no such file or directory, open '...\electron\path.txt'
 
 Remove node_modules_ and do a npm install again.
 
-## Running and Building on windows
-
