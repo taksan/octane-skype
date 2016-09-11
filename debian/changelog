@@ -1,3 +1,9 @@
+octane-skype (1.0.5-1ubuntu1) wily; urgency=medium
+
+  * Specifying architecture to prevent i386 builds (so far, unsupported)
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sun, 11 Sep 2016 11:34:12 -0300
+
 octane-skype (1.0.4-1) wily; urgency=low
 
   * Testing with separate node modules

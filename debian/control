@@ -7,7 +7,7 @@ Standards-Version: 3.9.6
 Homepage: https://github.com/taksan/octane-skype
 
 Package: octane-skype
-Architecture: all
+Architecture: amd64
 Depends: libappindicator1, libnotify-bin
 Description: 
  Web Skype with several features Tray + Highlight + Search
