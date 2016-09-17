@@ -13,25 +13,10 @@ module.exports.addonName = function () {
 
 module.exports.initUi = function (addonConfig, settingsClient) {
     themeLoader(settingsClient.forAddon("main"));
-    keepAlive();
+    keepAlive(settingsClient.forAddon("main"));
     userStatusWatcher();
     handleShowSettingsIpc();
     configureNotificationUpdates();
-};
-
-module.exports.initBackend = function(webview, addonSettings, config) {
-    webview.addEventListener('ipc-message', (event) => {
-        if (event.channel != "open-link")
-            return;
-
-        var href = event.args[0];
-        let protocol = url.parse(href).protocol;
-
-        if (config.NativeImageViewer && href.indexOf('imgpsh_fullsize') >= 0)
-            ipc.send('image:download', href);
-        else if (protocol === 'http:' || protocol === 'https:')
-            electron.shell.openExternal(href);
-    });
 };
 
 function themeLoader(addonConfig) {
@@ -70,7 +55,7 @@ function loadTheme(theme)
     });
 }
 
-function keepAlive() {
+function keepAlive(config) {
     var isIdle = true;
 
     function refreshIfIdle() {
@@ -87,11 +72,21 @@ function keepAlive() {
         idleRefresh = setInterval(refreshIfIdle, refreshInterval);
     });
 
-    document.addEventListener('click', function(event) {
-        var $elem = $(event.target).closest('a.thumbnail');
-        if ($elem.length) {
-            ipc.sendToHost('open-link', $elem.prop('href'));
-        }
+    whenAvailable(".chatContainer").done(function() {
+        document.querySelector(".chatContainer").addEventListener('click', function(event) {
+            var $possibleLink = $(event.target).closest('a[rel*="noopener"]');
+            if ($possibleLink.length) {
+                electron.shell.openExternal($possibleLink.prop("href"));
+                return;
+            }
+
+            if (!config.NativeImageViewer)
+                return;
+
+            var $elem = $(event.target).closest('a.thumbnailHolder');
+            if ($elem.length)
+                ipc.send('open-with-native-viewer', $elem.prop('href'));
+        });
     });
 }
 

@@ -1,3 +1,23 @@
+octane-skype (1.0.9-1ubuntu1) wily; urgency=high
+
+  * Fixed autostart
+  * Fixed links without thumbnails
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sun, 11 Sep 2016 11:34:12 -0300
+
+
+octane-skype (1.0.8-1ubuntu1) wily; urgency=high
+
+  * Needs rebuild with correct node_modules
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sun, 11 Sep 2016 11:34:12 -0300
+
+octane-skype (1.0.7-1ubuntu1) wily; urgency=high
+
+  * Fixing images and urls open
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sun, 11 Sep 2016 11:34:12 -0300
+
 octane-skype (1.0.6-1ubuntu1) wily; urgency=high
 
   * Web calls broken, fixed. Reverting arch change

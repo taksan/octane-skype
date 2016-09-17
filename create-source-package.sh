@@ -20,15 +20,15 @@ rsync -r -t -v --progress --exclude=$(basename $(pwd)) --exclude=.git --exclude=
 
 echo "Update change log"
 cd src-release
-V=$(head -1 debian/changelog | sed 's/.*(\(.*\)).*/\1/' | sed 's/.*\.\(.*\)-1/\1/')
-V=$((V+1))
+#V=$(head -1 debian/changelog | sed 's/.*(\(.*\)).*/\1/' | sed 's/.*\.\(.*\)-1/\1/')
+#V=$((V+1))
 
-LANG=C echo "octane-skype (1.0.$V-1) wily; urgency=low
+#LANG=C echo "octane-skype (1.0.$V-1) wily; urgency=low
 
-  * Testing with separate node modules
-
- -- Gabriel Takeuchi <g.takeuchi@gmail.com>  $(date -R)
-" | cat - ../../debian/changelog > debian/changelog
+#  * Testing with separate node modules
+#
+# -- Gabriel Takeuchi <g.takeuchi@gmail.com>  $(date -R)
+#" | cat - ../../debian/changelog > debian/changelog
 
 version=$(cat debian/changelog|head -1|sed 's/.*(\(.*\)-1.*/\1/')
 echo $version

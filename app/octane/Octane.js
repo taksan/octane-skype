@@ -7,10 +7,12 @@ const BrowserWindow = electron.BrowserWindow;
 const app           = electron.app;
 const ipcMain       = electron.ipcMain;
 const os            = require("os");
+const mime          = require("mime");
+const tmp           = require("tmp");
 
 var initialized   = false;
 var octaneWindow  = null;
-
+var imageCache    = {};
 var OctaneSkype = {
     initialize : function() {
         if (initialized) return;
@@ -45,13 +47,15 @@ var OctaneSkype = {
             OctaneSkype.enableAutostart(evt, value);
         });
 
+        ipcMain.on('open-with-native-viewer', OctaneSkype.downloadImage);
+
         initialized = true;
     },
 
     enableAutostart: function(evt, autostartEnabled) {
         var autostartFile = settings.autoStartFile();
         if (autostartEnabled) {
-            let target = '/usr/share/applications/octane.desktop';
+            let target = '/usr/share/applications/Octane-Skype.desktop';
             fs.symlink(target, autostartFile, (err) => {
                 if (!err) {
                     evt.returnValue = { success: true };
@@ -128,6 +132,44 @@ var OctaneSkype = {
 
     updateSettingsSize: function() {
         Object.assign(settings.config.window, octaneWindow.getBounds())
+    },
+
+    downloadImage: function(event, url) {
+        let file = imageCache[url];
+        if (file) {
+            if (file.complete) {
+                electron.shell.openItem(file.path);
+            }
+
+            // Pending downloads intentionally do not proceed
+            return;
+        }
+
+        let tmpWindow = new BrowserWindow({
+            show: false,
+            webPreferences: {
+                partition: 'persist:octane'
+            }
+        });
+
+        tmpWindow.webContents.session.once('will-download', (event, downloadItem) => {
+            imageCache[url] = file = {
+                path: tmp.tmpNameSync() + '.' + mime.extension(downloadItem.getMimeType()),
+                complete: false
+            };
+
+            downloadItem.setSavePath(file.path);
+            downloadItem.once('done', () => {
+                tmpWindow.destroy();
+                tmpWindow = null;
+
+                electron.shell.openItem(file.path);
+
+                file.complete = true;
+            });
+        });
+
+        tmpWindow.webContents.downloadURL(url);
     }
 };
 
