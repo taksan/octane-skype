@@ -2,6 +2,8 @@ const electron = require('electron');
 const ipc      = electron.ipcRenderer;
 const url      = require('url');
 const whenAvailable = require('../../octane/utils').whenAvailable;
+const path = require('path');
+const fs   = require('fs');
 
 $ = require('jquery');
 
@@ -9,6 +11,11 @@ const refreshInterval = 300000;
 
 module.exports.addonName = function () {
     return "core-addon";
+};
+
+module.exports.initBackend = function (webview) {
+    var defaultCssFile = path.join(__dirname, "image-viewer.css");
+    webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
 };
 
 module.exports.initUi = function (addonConfig, settingsClient) {
@@ -80,14 +87,44 @@ function keepAlive(config) {
                 return;
             }
 
-            if (!config.NativeImageViewer)
-                return;
-
             var $elem = $(event.target).closest('a.thumbnailHolder');
-            if ($elem.length)
+            if ($elem.length == 0)
+                return;
+            if (!config.NativeImageViewer)
+                openImageInside($elem.prop('href'));
+            else
                 ipc.send('open-with-native-viewer', $elem.prop('href'));
         });
+
+        document.addEventListener('keyup', function(e) {
+            if (e.code == "Escape") {
+                if (imgfull.is(":visible")) {
+                    imgfull.hide();
+                }
+            }
+        });
     });
+}
+
+var imgfull, justClicked = false;
+function openImageInside(imgLink) {
+    //electron.shell.openExternal(imgLink);
+    justClicked = true;
+    if (!imgfull) {
+        imgfull = $(`<img class="modal-content" id="img01" src="${imgLink}">`);
+        $(".mainStage").append(imgfull);
+        document.addEventListener("click", function(e) {
+            if (!justClicked && imgfull.is(":visible"))
+                imgfull.hide();
+            justClicked = false;
+        });
+    }
+    else {
+        imgfull.hide();
+        imgfull.prop("src", imgLink);
+    }
+
+    imgfull.show();
 }
 
 function userStatusWatcher() {

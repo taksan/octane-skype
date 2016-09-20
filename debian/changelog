@@ -1,3 +1,10 @@
+octane-skype (1.0.10-1ubuntu1) wily; urgency=medium
+
+  * Adde an internal image viewer
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sat, 17 Sep 2016 16:12:47 -0300
+
+
 octane-skype (1.0.9-1ubuntu1) wily; urgency=high
 
   * Fixed autostart

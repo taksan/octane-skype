@@ -1,0 +1,44 @@
+.modal-content {
+    z-index: 1000; /* Sit on top */
+    position: absolute;
+    margin: auto !important;
+    display: block;
+    top: 50%;
+    left: 50%;
+    transform: 	translateY(-50%) translateX(-50%);
+    border: 1em solid rgba(0,0,0,.5) !important;
+    max-width: 95%;
+    max-height: 95%;
+}
+
+.modal-content {
+    animation-name: zoom;
+    animation-duration: .5s;
+}
+
+@keyframes zoom {
+    from {
+        transform:scale(0) translateY(-100%) translateX(-100%)
+    }
+    to {
+        transform:scale(1) translateY(-50%) translateX(-50%)
+    }
+}
+
+/* The Close Button */
+.close {
+    position: relative;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px !important;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
