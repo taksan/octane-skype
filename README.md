@@ -80,18 +80,18 @@ Run npm to install application requirements:
 npm install
 ```
 
-On Windows, before runnning npm install, you must fist install windows-build-tools:
+On Windows, before runnning npm install, you must first install windows-build-tools:
 
 npm install --global --production windows-build-tools
 
-Download GTK:
+You'll also need to download and extract GTK: 
 
     * (32-bit) - http://ftp.gnome.org/pub/gnome/binaries/win32/gtk+/2.24/gtk+-bundle_2.24.10-20120208_win32.zip
     * (64-bit) - http://ftp.gnome.org/pub/gnome/binaries/win64/gtk+/2.22/gtk+-bundle_2.22.1-20101229_win64.zip
 
 And extract to C:\GTK
 
-If you face the following error during npm install:
+If you get the following error during npm install:
 
 ```
 error C2373: '__pfnDliNotifyHook2': redefinition; different type modifiers [...\canvas.vcxproj]
