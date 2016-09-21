@@ -1,6 +1,25 @@
+octane-skype (1.0.14-1ubuntu1) xenial; urgency=medium
+
+  * Fixing issues with build
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sat, 17 Sep 2016 16:12:47 -0300
+
+
+octane-skype (1.0.12-1ubuntu1~xenial) xenial; urgency=medium
+
+  * Fixed libgif version for xenial
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sat, 17 Sep 2016 16:12:47 -0300
+
+octane-skype (1.0.11-1ubuntu1) wily; urgency=medium
+
+  * Adding explicit dependencies
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sat, 17 Sep 2016 16:12:47 -0300
+
 octane-skype (1.0.10-1ubuntu1) wily; urgency=medium
 
-  * Adde an internal image viewer
+  * Added an internal image viewer
 
  -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Sat, 17 Sep 2016 16:12:47 -0300
 

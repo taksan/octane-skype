@@ -2,12 +2,12 @@ Source: octane-skype
 Section: lisp
 Priority: optional
 Maintainer: Gabriel Takeuchi <g.takeuchi@gmail.com>
-Build-Depends: debhelper (>= 9),rsync, python, octane-skype-build-assets, octane-skype-node-modules
+Build-Depends: debhelper (>= 9), dpkg-dev, rsync, python, octane-skype-build-assets, octane-skype-node-modules
 Standards-Version: 3.9.6
 Homepage: https://github.com/taksan/octane-skype
 
 Package: octane-skype
 Architecture: all
-Depends: libappindicator1, libnotify-bin
+Depends: libappindicator1, libnotify-bin, libgif-dev, libcairo2-dev, libjpeg8-dev, libpango1.0-dev, libgif-dev, libxss1, libgconf-2-4, libnss3, libasound2
 Description: 
  Web Skype with several features Tray + Highlight + Search

@@ -24,9 +24,13 @@ var OctaneSkype = {
             icon: app.getAppPath() + '/assets/skype-icon.png'
         };
         Object.assign(options, settings.config.window);
-        options.show = !settings.config.StartMinimized;
+        options.show = false;
 
         octaneWindow = new BrowserWindow(options);
+        octaneWindow.once("ready-to-show", function() {
+            if (!settings.config.StartMinimized)
+                octaneWindow.show();
+        });//https://github.com/electron/electron/issues/861
 
         trayIcon.initialize(OctaneSkype);
         OctaneSkype.changeQuitToHide();
