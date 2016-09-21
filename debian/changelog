@@ -1,3 +1,10 @@
+octane-skype (1.0.15-1ubuntu1~xenial) xenial; urgency=high
+
+  * Finally fixing libgif issue.
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Tue, 20 Sep 2016 22:20:00 -0300
+
+
 octane-skype (1.0.14-1ubuntu1) xenial; urgency=medium
 
   * Fixing issues with build
