@@ -13,9 +13,29 @@ module.exports.addonName = function () {
     return "core-addon";
 };
 
-module.exports.initBackend = function (webview) {
+var handlersInitialized = false;
+module.exports.initBackend = function (webview, settingsForCore, mainSettings) {
     var defaultCssFile = path.join(__dirname, "image-viewer.css");
     webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
+
+    if (!mainSettings.ZoomFactor)
+        mainSettings.ZoomFactor = 1;
+
+    if (handlersInitialized)
+        return;
+    handlersInitialized = true;
+    webview.addEventListener('did-stop-loading', function () {
+        webview.getWebContents().setZoomFactor(mainSettings.ZoomFactor);
+    });
+
+    webview.addEventListener("ipc-message", function(event) {
+        switch(event.channel) {
+            case 'changeZoomLevel':
+                mainSettings.ZoomFactor = mainSettings.ZoomFactor + event.args/100;
+                webview.getWebContents().setZoomFactor(mainSettings.ZoomFactor);
+                break;
+        }
+    });
 };
 
 module.exports.initUi = function (addonConfig, settingsClient) {

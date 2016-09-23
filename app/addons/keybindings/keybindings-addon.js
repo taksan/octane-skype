@@ -1,7 +1,14 @@
+const ipc = require("electron").ipcRenderer;
 $ = require('jquery');
+
 
 module.exports.addonName = function () {
     return "keybindings-addon";
+};
+
+function changeZoomLevel(factor)
+{
+    ipc.sendToHost("changeZoomLevel", factor);
 }
 
 module.exports.initUi = function () {
@@ -20,6 +27,12 @@ module.exports.initUi = function () {
 
         if (e.ctrlKey) {
             switch (e.keyCode) {
+                case 187://CTRL+=
+                    changeZoomLevel(10);
+                    break;
+                case 189://CTRL+-
+                    changeZoomLevel(-10);
+                    break;
                 case 71://G - next unread; when searching, go to first result
                     var firstUnreadChat = document.querySelector("a.unread");
                     if (firstUnreadChat)

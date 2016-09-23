@@ -93,8 +93,11 @@ module.exports = {
 
         if (addon == "main")
             config[configKey] = value;
-        else
+        else {
+            if (typeof config.addons[addon] == "undefined")
+                config.addons[addon] = {};
             config.addons[addon][configKey] = value;
+        }
 
         module.exports.saveConfiguration();
     }

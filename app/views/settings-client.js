@@ -15,14 +15,29 @@ module.exports.forAddon = function(addon) {
 
             if (addon == "main")
                 return target[name];
-            else
+            else {
+                if (typeof target.addons[addon] == "undefined")
+                    target.addons[addon] = {};
                 return target.addons[addon][name];
+            }
         },
         set: function(target, name, value){
-            if (addon == "main")
+            if (addon == "main") {
+                var res = ipc.sendSync("settings-update", addon, name, value);
+                if (!res.success) {
+                    throw new Error(res.message);
+                }
                 target[name] = value;
-            else
+            }
+            else {
+                if (typeof target.addons[addon] == "undefined")
+                    target.addons[addon] = {};
+                var res = ipc.sendSync("settings-update", addon, name, value);
+                if (!res.success) {
+                    throw new Error(res.message);
+                }
                 target.addons[addon][name] = value;
+            }
 
             changeListener.forEach(function(listener){
                 if (listener.addon == addon && listener.attribute == name) {
@@ -62,13 +77,14 @@ function AddOn(addonName, metadata, config) {
     };
 
     this.update = function(key, value) {
-        var res = ipc.sendSync("settings-update", addonName, key, value);
-        if (!res.success) {
-            alert(res.message);
+        try {
+            var config = module.exports.forAddon(addonName);
+            config[key] = value;
+        } catch (error) {
+            alert(error.message);
             return false;
         }
-        var config = module.exports.forAddon(addonName);
-        config[key] = value;
+
         return true;
     }
 }
