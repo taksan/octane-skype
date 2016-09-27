@@ -43,7 +43,7 @@ module.exports = {
             },
             NativeImageViewer: {
                 title: "Open images with native viewer",
-                description: "Use the native viewer to open images instead of browser",
+                description: "Use the native viewer to open images instead of internal panel",
                 type: "boolean"
             }
         },

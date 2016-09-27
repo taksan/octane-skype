@@ -15,27 +15,21 @@ module.exports.forAddon = function(addon) {
 
             if (addon == "main")
                 return target[name];
-            else {
-                if (typeof target.addons[addon] == "undefined")
-                    target.addons[addon] = {};
-                return target.addons[addon][name];
-            }
+
+            if (typeof target.addons[addon] == "undefined")
+                target.addons[addon] = {};
+            return target.addons[addon][name];
         },
         set: function(target, name, value){
-            if (addon == "main") {
-                var res = ipc.sendSync("settings-update", addon, name, value);
-                if (!res.success) {
-                    throw new Error(res.message);
-                }
+            var res = ipc.sendSync("settings-update", addon, name, value);
+            if (!res.success)
+                throw new Error(res.message);
+
+            if (addon == "main")
                 target[name] = value;
-            }
             else {
                 if (typeof target.addons[addon] == "undefined")
                     target.addons[addon] = {};
-                var res = ipc.sendSync("settings-update", addon, name, value);
-                if (!res.success) {
-                    throw new Error(res.message);
-                }
                 target.addons[addon][name] = value;
             }
 
