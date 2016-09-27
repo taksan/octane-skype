@@ -103,6 +103,10 @@ function keepAlive(config) {
         document.querySelector(".chatContainer").addEventListener('click', function(event) {
             var $possibleLink = $(event.target).closest('a[rel*="noopener"]');
             if ($possibleLink.length) {
+                if ($possibleLink.prop("href").indexOf("/join.skype.com/")>-1) {
+                    window.location = $possibleLink.prop("href");
+                    return;
+                }
                 electron.shell.openExternal($possibleLink.prop("href"));
                 return;
             }
@@ -118,7 +122,7 @@ function keepAlive(config) {
 
         document.addEventListener('keyup', function(e) {
             if (e.code == "Escape") {
-                if (imgfull.is(":visible")) {
+                if (imgfull && imgfull.is(":visible")) {
                     imgfull.hide();
                 }
             }
