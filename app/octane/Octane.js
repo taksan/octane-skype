@@ -9,6 +9,7 @@ const ipcMain       = electron.ipcMain;
 const os            = require("os");
 const mime          = require("mime");
 const tmp           = require("tmp");
+const addonManager  = require('./addOnManager');
 
 var initialized   = false;
 var octaneWindow  = null;
@@ -52,6 +53,8 @@ var OctaneSkype = {
         });
 
         ipcMain.on('open-with-native-viewer', OctaneSkype.downloadImage);
+
+        addonManager.initializeMainProcess();
 
         initialized = true;
     },
@@ -127,7 +130,7 @@ var OctaneSkype = {
     },
 
     statusChange : function(status) {
-        octaneWindow.webContents.send("status-change", status)
+        OctaneSkype.sendIpc("status-change", status)
     },
 
     settings: function() {

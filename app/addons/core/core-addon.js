@@ -50,7 +50,6 @@ function themeLoader(addonConfig) {
     $("head").append("<style type='text/css' id='skype-theme'></style>");
     loadTheme(addonConfig.Theme);
     addonConfig.observe("Theme", (value)=>loadTheme(value))
-
 }
 
 function loadTheme(theme)
@@ -104,7 +103,7 @@ function keepAlive(config) {
             var $possibleLink = $(event.target).closest('a[rel*="noopener"]');
             if ($possibleLink.length) {
                 if ($possibleLink.prop("href").indexOf("/join.skype.com/")>-1) {
-                    window.location = $possibleLink.prop("href");
+                    ipc.send("join-group", $possibleLink.prop("href"));
                     return;
                 }
                 electron.shell.openExternal($possibleLink.prop("href"));

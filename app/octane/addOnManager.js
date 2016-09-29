@@ -20,6 +20,16 @@ module.exports.initialize = function () {
     });
 };
 
+module.exports.initializeMainProcess = function (octaneWindow) {
+    var self = module.exports;
+    self.initialize();
+    for (var key in addOns) {
+        var addOn = addOns[key];
+        if (addOn.initMainProcess)
+            addOn.initMainProcess(octaneWindow)
+    }
+};
+
 module.exports.initBackend = function(webview, settingsClient) {
     for (var addonFile in addOns) {
         var addon = addOns[addonFile];
