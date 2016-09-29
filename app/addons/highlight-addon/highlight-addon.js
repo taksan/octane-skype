@@ -93,19 +93,31 @@ module.exports.initUi = function (addonConfig) {
             if (mutation.target)
                 if (mutation.target.className.indexOf("hljs")>-1)
                     parentCodeBlock = mutation.target;
-
-            if (mutation.addedNodes.length == 0) return;
-            if (mutation.addedNodes[0].nodeName != "SWX-MESSAGE") return;
-
-            var swxMessageNode = mutation.addedNodes[0];
+            var swxMessageNode=null;
+            if ($(mutation.target).parent().parent().parent().size() == 1 && $(mutation.target).parent().parent().parent()[0].nodeName == "SWX-MESSAGE")
+                swxMessageNode=$(mutation.target).parent().parent().parent()[0];
+            else if (mutation.addedNodes.length>0 && mutation.addedNodes[0].nodeName == "SWX-MESSAGE")
+                swxMessageNode = mutation.target;
+            if (!swxMessageNode)
+                return;
             setTimeout(function () {
                 var messageP = document.querySelector("#msg_" + swxMessageNode.getAttribute("data-id") + " p");
                 if (!messageP)
                     return;
                 var textMessage = messageP.innerHTML;
-                if (textMessage.match(/^\s*```/)) {
+                if (textMessage.indexOf("```")>-1) {
+                    messageP.innerHTML = messageP.innerHTML.replace(/```(.+?)(```|$)/mg,'<span class="block_of_code">$1</span>');
+                    var blockToHighlight = messageP.querySelector(".block_of_code");
                     lastUpdatedCodeBlock = messageP;
-                    doHighlightBlock(messageP, observer);
+                    doHighlightBlock(blockToHighlight, observer);
+                }
+                else if (textMessage.match(/.*`[^`]*`.*/)) {
+                    messageP.innerHTML = messageP.innerHTML.replace(/`(.+?)(`|$)/g,'<span class="inline_code">$1</span>');
+                    var blocksToHighlight = messageP.querySelectorAll(".inline_code");
+                    lastUpdatedCodeBlock = messageP;
+                    blocksToHighlight.forEach(function(block) {
+                        doHighlightBlock(block, observer);
+                    })
                 }
             }, 1);
         });
