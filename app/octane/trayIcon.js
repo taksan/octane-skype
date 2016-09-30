@@ -11,10 +11,6 @@ let basePath        = electron.app.getAppPath() + '/assets/tray/';
 let lastCount       = 0;
 let logo            = null;
 
-if (basePath.indexOf("asar")) {
-    basePath = __dirname+'/../assets/tray/';
-}
-
 exports.initialize = function(instance) {
     octaneInstance = instance;
 
