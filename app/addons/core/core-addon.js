@@ -40,7 +40,8 @@ module.exports.initBackend = function (webview, settingsForCore, mainSettings) {
 
 module.exports.initUi = function (addonConfig, settingsClient) {
     themeLoader(settingsClient.forAddon("main"));
-    keepAlive(settingsClient.forAddon("main"));
+    keepAlive();
+    handleLinks(settingsClient.forAddon("main"))
     userStatusWatcher();
     handleShowSettingsIpc();
     configureNotificationUpdates();
@@ -81,15 +82,7 @@ function loadTheme(theme)
     });
 }
 
-function handleJoinClick(link) {
-    var spinnerPath = path.join(__dirname, "spinner.html");
-    var spinnerHtml = fs.readFileSync(spinnerPath, 'utf8')
-    var spinner = $(spinnerHtml);
-    $(".mainStage").append(spinner);
-    ipc.send("join-group", link);
-}
-
-function keepAlive(config) {
+function keepAlive() {
     var isIdle = true;
 
     function refreshIfIdle() {
@@ -106,6 +99,10 @@ function keepAlive(config) {
         idleRefresh = setInterval(refreshIfIdle, refreshInterval);
     });
 
+}
+
+var imgfull, justClicked = false;
+function handleLinks(config) {
     whenAvailable(".chatContainer").done(function() {
         document.querySelector(".chatContainer").addEventListener('click', function(event) {
             var $possibleLink = $(event.target).closest('a[rel*="noopener"]');
@@ -137,7 +134,14 @@ function keepAlive(config) {
     });
 }
 
-var imgfull, justClicked = false;
+function handleJoinClick(link) {
+    var spinnerPath = path.join(__dirname, "spinner.html");
+    var spinnerHtml = fs.readFileSync(spinnerPath, 'utf8')
+    var spinner = $(spinnerHtml);
+    $(".mainStage").append(spinner);
+    ipc.send("join-group", link);
+}
+
 function openImageInside(imgLink) {
     //electron.shell.openExternal(imgLink);
     justClicked = true;
