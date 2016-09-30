@@ -1,3 +1,15 @@
+octane-skype (1.0.20-1ubuntu1) xenial; urgency=high
+
+  * 1.0.19 for xenial
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com> Thu, 29 Sep 2016 21:44:45 -0300
+
+octane-skype (1.0.19-1ubuntu1) wily; urgency=high
+
+  * Join links optimization, avoiding 2 clicks to get to the group
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com> Thu, 29 Sep 2016 21:44:45 -0300
+
 octane-skype (1.0.18-1ubuntu1) xenial; urgency=high
 
   * Xenial version for 1.0.17
