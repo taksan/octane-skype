@@ -12,11 +12,11 @@ module.exports.initUi = function () {
     })
 };
 
-module.exports.initializeMainProcess = function () {
+module.exports.initMainProcess = function () {
     ipcMain.on('join-group', join);
 };
 
-function join() {
+function join(event, url) {
     const BrowserWindow = electron.BrowserWindow;
     let tmpWindow = new BrowserWindow({
         show: false,

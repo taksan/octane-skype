@@ -26,7 +26,7 @@ module.exports.initializeMainProcess = function (octaneWindow) {
     for (var key in addOns) {
         var addOn = addOns[key];
         if (addOn.initMainProcess)
-            addOn.initMainProcess(octaneWindow)
+            addOn.initMainProcess(octaneWindow);
     }
 };
 

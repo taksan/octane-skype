@@ -81,6 +81,14 @@ function loadTheme(theme)
     });
 }
 
+function handleJoinClick(link) {
+    var spinnerPath = path.join(__dirname, "spinner.html");
+    var spinnerHtml = fs.readFileSync(spinnerPath, 'utf8')
+    var spinner = $(spinnerHtml);
+    $(".mainStage").append(spinner);
+    ipc.send("join-group", link);
+}
+
 function keepAlive(config) {
     var isIdle = true;
 
@@ -103,7 +111,7 @@ function keepAlive(config) {
             var $possibleLink = $(event.target).closest('a[rel*="noopener"]');
             if ($possibleLink.length) {
                 if ($possibleLink.prop("href").indexOf("/join.skype.com/")>-1) {
-                    ipc.send("join-group", $possibleLink.prop("href"));
+                    handleJoinClick($possibleLink.prop("href"));
                     return;
                 }
                 electron.shell.openExternal($possibleLink.prop("href"));
