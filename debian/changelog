@@ -1,3 +1,21 @@
+octane-skype (1.0.23-1ubuntu1) wily; urgency=high
+
+  * knockout was shipped by mistake
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com> Sat, 01 Oct 2016 15:31:41 -0300
+
+octane-skype (1.0.22-1ubuntu1) xenial; urgency=high
+
+  * Fixing package removing hack for webstorm (xenial version)
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com> Thu, 29 Sep 2016 21:44:45 -0300
+
+octane-skype (1.0.21-1ubuntu1) wily; urgency=high
+
+  * Fixing package removing hack for webstorm
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com> Thu, 29 Sep 2016 21:44:45 -0300
+
 octane-skype (1.0.20-1ubuntu1) xenial; urgency=high
 
   * 1.0.19 for xenial
