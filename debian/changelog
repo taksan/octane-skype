@@ -1,3 +1,9 @@
+octane-skype (1.0.24-1ubuntu1) xenial; urgency=high
+
+  * knockout was shipped by mistake (xenial version)
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com> Sat, 01 Oct 2016 15:31:41 -0300
+
 octane-skype (1.0.23-1ubuntu1) wily; urgency=high
 
   * knockout was shipped by mistake
