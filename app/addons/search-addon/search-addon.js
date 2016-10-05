@@ -1,4 +1,5 @@
-$ = require('jquery');
+const $ = require('jquery');
+const rightPane = require('../../octane/utils').rightPane;
 
 var searchDown = true;
 var caseMatches = false;
@@ -158,37 +159,12 @@ function highlightText(element, searchTerm){
         = element.innerHTML.replace(new RegExp("("+searchTerm+")","g"+caseFlag),'<span class="search-highlight">$1</span>');
 }
 
-var previousResizeHandler = null;
 function initMatchList(title) {
-    var searchResults = document.getElementById("search-results");
-    var $search = $("#search-results");
-    if (!$search.is(":visible"))
-        $search.remove();
-
-    var currentConversationHistory = $(".conversationHistory:visible");
-
-    if (!document.getElementById("search-results")) {
-        // add the div if it's not there
-        currentConversationHistory.after('<div id="search-results" class="search-results"></div>');
-        searchResults = document.getElementById("search-results");
-        $(searchResults).width("20em");
-
-        // make sure the search list is always the same size of conversation history
-        $(searchResults).height(currentConversationHistory.height() + 1);
-        if (previousResizeHandler)
-            $(window).unbind("resize", previousResizeHandler);
-
-        previousResizeHandler =function () {
-            $(searchResults).height(currentConversationHistory.height() + 1);
-        };
-        $(window).resize(previousResizeHandler)
-    }
-    // open space for the div
-    currentConversationHistory.css("transition", "width .5s ease-in-out");
-    currentConversationHistory.css("width","calc(100% - 20em)");
-    searchResults.innerHTML="<div class='search-result-title'>"+title+"</div>\n";
-    $(searchResults).width("20em");
-    return searchResults;
+    var pane = rightPane();
+    if (title)
+        pane.setContents("<div class='search-result-title'>"+title+"</div>\n");
+    pane.show();
+    return pane;
 }
 
 function updateMatchList(searchTerm)
@@ -208,7 +184,7 @@ function updateMatchList(searchTerm)
         var msgContent = swxMsg.find(".content").text().trim();
 
         var result = $("<span class='result-snippet' id='r_"+swxMsg.attr("data-id")+"'><i>[" + author + "]</i>: "+msgContent+"</span>");
-        $(searchResults).append(result);
+        searchResults.append(result);
 
         $(result).click(function() {
             aMatch.scrollIntoView();
@@ -222,13 +198,13 @@ function updateMatchList(searchTerm)
 
         });
     });
-    $(searchResults).find(".result-snippet").each(function() {
+    searchResults.find(".result-snippet").each(function() {
         highlightText(this, searchTerm);
     })
 }
 
 function hideMatchList() {
-    $(".conversationHistory").css("width","100%");
-    $("#search-results").width("0px");
-
+    // $(".conversationHistory").css("width","100%");
+    // $("#search-results").width("0px");
+    rightPane().hide();
 }
