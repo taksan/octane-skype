@@ -72,7 +72,12 @@ function openOctaneSettings(settings) {
 
 function addAddOnPreferences($addonUl, addon) {
     addon.forEachDefinition(function(definition) {
-        var component = typeInfo[definition.type].makeHtml(addon.name, definition);
+        var info = typeInfo[definition.type];
+        if (!info) {
+            console.error("Preference of type " + definition.type + " was not recognized");
+            return;
+        }
+        var component = info.makeHtml(addon.name, definition);
         $addonUl.append($(component));
         typeInfo[definition.type].addChangeHandler(addon, definition.name);
     });
@@ -102,11 +107,8 @@ const typeInfo = {
         addChangeHandler: function(addon, defName) {
             $("#" + addon.name+"_" + defName).click(function(){
                 var newState = !$(this).hasClass("ToggleButton--checked");
-                console.log(" will toggle to " + newState);
                 if (!addon.update(defName, newState))
                     newState = !newState;
-
-                console.log(" state now is " + newState);
 
                 if (newState)
                     $(this).addClass("ToggleButton--checked");
@@ -143,5 +145,26 @@ const typeInfo = {
                 addon.update(defName, value);
             });
         }
+    },
+    text : {
+        makeHtml: function (addOnName, definition) {
+            var id = addOnName+"_" + definition.name;
+            return `<li class="UserSettingsPage-option pref-template-select">
+                        <h2 class="pref-heading UserSettingsPage-featureLabel">${definition.title}</h2>
+                        <div>
+                            <div class="settings-input">
+                                <input type="text" id="${id}" class="inputField fontSize-h4" value="${definition.currentValue}">
+                            </div>
+                        </div>
+                        <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>
+                    </li>`
+        },
+        addChangeHandler: function(addon, defName) {
+            $("#" + addon.name+"_" + defName).change(function () {
+                var value = $(this).val();
+                addon.update(defName, value);
+            });
+        }
     }
+
 };

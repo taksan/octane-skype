@@ -12,3 +12,10 @@
 .PreferencesTab.active {
     border-bottom: 0px;
 }
+
+.settings-input input {
+    width: 20em !important;
+    border: none !important;;
+    border-bottom: 1px solid !important;;
+    padding-bottom: .5em !important;;
+}
