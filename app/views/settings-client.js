@@ -1,9 +1,16 @@
 const ipc = require('electron').ipcRenderer;
 
-var settings = null;
+var settings = {};
 
 module.exports.initialize = function(settingsJson) {
+    if (typeof settingsJson == 'object')
+        settingsJson = JSON.stringify(settingsJson); // 'clone'
+
     settings = JSON.parse(settingsJson);
+};
+
+module.exports.Settings = function (addon) {
+    return module.exports.forAddon(addon);
 };
 
 var changeListener = [];

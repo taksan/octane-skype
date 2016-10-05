@@ -71,6 +71,8 @@ module.exports = {
         Object.assign(this.config, JSON.parse(fs.readFileSync(settingsFile)));
         module.exports.config.AutoStart = this.autoStartFileExists();
 
+        require("../views/settings-client").initialize(this);
+
         addonManager.forEachConfig(function(addonName, configKey, metadata) {
             if (!module.exports.metadata.addons[addonName])
                 module.exports.metadata.addons[addonName]={};
