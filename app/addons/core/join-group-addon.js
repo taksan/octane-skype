@@ -1,6 +1,8 @@
 const electron = require('electron');
 const ipc      = electron.ipcRenderer;
 const ipcMain       = electron.ipcMain;
+const path = require('path');
+const fs   = require('fs');
 
 module.exports.addonName = function () {
     return "join-group-addon";
@@ -14,6 +16,14 @@ module.exports.initUi = function () {
 
 module.exports.initMainProcess = function () {
     ipcMain.on('join-group', join);
+};
+
+module.exports.join = function(link) {
+    var spinnerPath = path.join(__dirname, "spinner.html");
+    var spinnerHtml = fs.readFileSync(spinnerPath, 'utf8')
+    var spinner = $(spinnerHtml);
+    $(".mainStage").append(spinner);
+    ipc.send("join-group", link);
 };
 
 function join(event, url) {

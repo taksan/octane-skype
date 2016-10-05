@@ -4,6 +4,7 @@ const url      = require('url');
 const whenAvailable = require('../../octane/utils').whenAvailable;
 const path = require('path');
 const fs   = require('fs');
+const join = require('./join-group-addon').join;
 
 $ = require('jquery');
 
@@ -108,7 +109,7 @@ function handleLinks(config) {
             var $possibleLink = $(event.target).closest('a[rel*="noopener"]');
             if ($possibleLink.length) {
                 if ($possibleLink.prop("href").indexOf("/join.skype.com/")>-1) {
-                    handleJoinClick($possibleLink.prop("href"));
+                    join($possibleLink.prop("href"));
                     return;
                 }
                 electron.shell.openExternal($possibleLink.prop("href"));
@@ -132,14 +133,6 @@ function handleLinks(config) {
             }
         });
     });
-}
-
-function handleJoinClick(link) {
-    var spinnerPath = path.join(__dirname, "spinner.html");
-    var spinnerHtml = fs.readFileSync(spinnerPath, 'utf8')
-    var spinner = $(spinnerHtml);
-    $(".mainStage").append(spinner);
-    ipc.send("join-group", link);
 }
 
 function openImageInside(imgLink) {

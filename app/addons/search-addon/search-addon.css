@@ -5,9 +5,7 @@
     position:         relative;
     width:            20em;
     border:           1px solid;
-    padding:          .3em;
-    padding-left:     1em;
-    padding-right:    0em;
+    padding:          .3em 0 .3em 1em;
     font-size:        .75em;
     font-weight:      normal
 }
@@ -41,7 +39,6 @@
 :root .swx .text-search-box .case-matching .case-matching-sign {
     font-size: 1.3em;
 }
-
 
 :root .swx .search-input {
     border:           0px !important;
@@ -80,7 +77,6 @@
     display:       block;
     margin-right:  2em;
     margin-top:    .3em;
-    font-size:     .6em;
     line-height:   1.2em !important;
     padding:       .5em;
     cursor:        pointer;
