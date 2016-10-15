@@ -36,6 +36,17 @@ body
     background-color $background !important
     border-color $background !important
 
+:root .swx input
+    color $normal_text !important
+    background-color inherit !important
+
+:root .swx .chat .conversationHeader .headerMain .roster .grid .tile.conversationTopic .editTopic
+    background-color $borders !important
+    border $background !important
+
+:root .swx .ContactsPage-hint
+    background-color $borders !important
+
 .settingItem
     color $normal_text !important
 
@@ -185,6 +196,12 @@ body
     color #45BF55 !important
 
 .timelineComponentContainer .active.message, .timelineComponentContainer .message:before, .searchItem:before, .navItem.icon:hover
+    background #1d1d1d !important
+
+.timelineComponentContainer .active.message, .timelineComponentContainer .message:before, .searchItem:before, .navItem.icon:active
+    background #1d1d1d !important
+
+.timelineComponentContainer .active.message, .timelineComponentContainer .message:before, .searchItem:before, .navItem.icon:focus
     background #1d1d1d !important
 
 .unread .counter .circle, :root .swx .themeWhite .timeline .recent.active.unread .counter span.circle
