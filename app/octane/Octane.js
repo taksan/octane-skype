@@ -6,7 +6,6 @@ const fs            = require('fs');
 const BrowserWindow = electron.BrowserWindow;
 const app           = electron.app;
 const ipcMain       = electron.ipcMain;
-const os            = require("os");
 const mime          = require("mime");
 const tmp           = require("tmp");
 const addonManager  = require('./addOnManager');

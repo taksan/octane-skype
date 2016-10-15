@@ -1,5 +1,5 @@
 const $ = require('jquery');
-const rightPane = require('../../octane/utils').rightPane;
+const rightPane = require('octane/utils').rightPane;
 
 var searchDown = true;
 var caseMatches = false;

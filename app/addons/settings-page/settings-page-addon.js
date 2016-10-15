@@ -45,15 +45,19 @@ function openOctaneSettings(settings) {
     var $userSettingsTablist = $(".UserSettingsPage-Tab-List");
     var selected = false;
     settings.forEachAddon(function(addon) {
+        var $addonUl = $(`<ul class="UserSettingsPage-list AddonPreferences ${addon.name}-prefs"></ul>`);
+        $addonUl.css("display", "none");
+
+        if (addAddOnPreferences($addonUl, addon) == 0){
+            console.log("Addon " + addon.name + " has no ui definitions. Skipping...");
+            return;
+        }
+
         var title = addon.name.replace("-addon", "");
         var $tabElem = $(`<a class="UserSettingsPage-category PreferencesTab"> ${title} </a>`);
         $userSettingsTablist.append($tabElem);
 
-        var $addonUl = $(`<ul class="UserSettingsPage-list AddonPreferences ${addon.name}-prefs"></ul>`);
-        $addonUl.css("display", "none");
         $(".UserSettingsPage-scroll-area .scrollViewport").append($addonUl);
-
-        addAddOnPreferences($addonUl, addon);
 
         var selectTab = function() {
             $(".AddonPreferences").css("display", "none");
@@ -71,7 +75,9 @@ function openOctaneSettings(settings) {
 }
 
 function addAddOnPreferences($addonUl, addon) {
+    var definitionCount=0;
     addon.forEachDefinition(function(definition) {
+        definitionCount++;
         var info = typeInfo[definition.type];
         if (!info) {
             console.error("Preference of type " + definition.type + " was not recognized");
@@ -81,6 +87,7 @@ function addAddOnPreferences($addonUl, addon) {
         $addonUl.append($(component));
         typeInfo[definition.type].addChangeHandler(addon, definition.name);
     });
+    return definitionCount;
 }
 
 const typeInfo = {

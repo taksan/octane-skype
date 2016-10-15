@@ -1,5 +1,6 @@
 'use strict';
-
+require('app-module-path').addPath(__dirname+"/../");
+const electron = require('electron');
 const ipc = require('electron').ipcRenderer;
 
 // this is a hack that makes the window raise, because skype's notification onclick invoke window.focus
@@ -20,14 +21,17 @@ ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
     if (mainWindowLoadedInitialized) return;
     mainWindowLoadedInitialized = true;
 
-    const settingsClient = require("./settings-client");
+    const settingsClient = require("./../octane/settings-client");
     settingsClient.initialize(settingsJson);
 
-    const whenAvailable = require('../octane/utils').whenAvailable;
+    const whenAvailable = require('octane/utils').whenAvailable;
 
     addOnList.forEach(function (addOn) {
         try {
             var addonModule = require(addOn);
+            if (!addonModule.initUi)
+                return;
+
             if (addonModule.dependsOnElement)
                 whenAvailable(addonModule.dependsOnElement())
                     .done(()=>

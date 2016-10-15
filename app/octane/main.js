@@ -1,3 +1,4 @@
+require('app-module-path').addPath(__dirname+"/../");
 const electron = require('electron');
 const app      = electron.app;
 const octane   = require('./Octane');

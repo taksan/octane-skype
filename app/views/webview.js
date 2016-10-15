@@ -1,8 +1,9 @@
+require('app-module-path').addPath(__dirname+"/../");
 const electron  = require('electron');
-const addOns    = require('../octane/addOnManager');
-const octaneApp = electron.remote.require('../octane/Octane');
+const addOns    = require('octane/addOnManager');
+const octaneApp = electron.remote.require('octane/Octane');
 const skypeView = document.getElementById('skype-view');
-const settingsClient = require("./settings-client");
+const settingsClient = require("octane/settings-client");
 const ipcRenderer = electron.ipcRenderer;
 
 settingsClient.initialize(JSON.stringify(octaneApp.settings()));

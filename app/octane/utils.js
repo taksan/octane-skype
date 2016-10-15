@@ -1,4 +1,4 @@
-$ = require('../node_modules/jquery/dist/jquery.min.js');
+$ = require('jquery');
 
 function Promise()
 {
@@ -20,7 +20,7 @@ function Promise()
     this.reject = function() {
         rejectArguments = arguments;
         rejectFunctions.forEach(function(fn) {
-            fn.apply(null, resolveArguments);
+            fn.apply(null, rejectArguments);
         });
         rejectFunctions = [];
     };
@@ -93,9 +93,9 @@ exports.rightPane = function(){
     var currentConversationHistory = $(".conversationHistory:visible");
     const panelWidth="20em";
 
-    var $directoryDiv = $("#"+paneId);
-    if (!$directoryDiv.is(":visible"))
-        $directoryDiv.remove();
+    var $rightPaneDiv = $("#"+paneId);
+    if (!$rightPaneDiv.is(":visible"))
+        $rightPaneDiv.remove();
 
     var directoryDiv = document.getElementById(paneId);
     if (!directoryDiv) {
@@ -133,7 +133,10 @@ exports.rightPane = function(){
             return $(directoryDiv).width() > 0;
         },
         setContents: function(contents) {
-            $(directoryDiv).html($(contents))
+            if (typeof contents == 'string')
+                $(directoryDiv).html($(contents))
+            else
+                $(directoryDiv).html(contents)
         },
         append: function(contents) {
             $(directoryDiv).append(contents);
@@ -143,3 +146,11 @@ exports.rightPane = function(){
         }
     };
 };
+
+exports.spinner = function(title) {
+    const path = require('path');
+    const fs   = require('fs');
+    var spinnerPath = path.join(__dirname, "spinner.html");
+    var spinnerHtml = fs.readFileSync(spinnerPath, 'utf8');
+    return spinnerHtml.replace("$TITLE",title);
+}
