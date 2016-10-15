@@ -68,3 +68,21 @@
     font-weight: bold !important;
     text-shadow: 0 0 1em #00aff0, 0 0 0.2em #0078ca, 0 0 0.2em #c7edfc;
 }
+
+.warning {
+    background-color: black;
+    position: absolute;
+    z-index: 1000;
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    padding: 1em !important;
+    padding-top: 0.3em !important;
+    border: 1px solid white !important;;
+    cursor: pointer;
+}
+
+.warning:hover {
+    background-color: rgb(45,45,45);
+}

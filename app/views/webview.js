@@ -9,12 +9,8 @@ const ipcRenderer = electron.ipcRenderer;
 settingsClient.initialize(JSON.stringify(octaneApp.settings()));
 
 addOns.initialize(skypeView, octaneApp);
-var backendInitialized = false;
 skypeView.addEventListener('did-navigate', () => {
-    // if (backendInitialized)
-    //     return;
     addOns.initBackend(skypeView, settingsClient);
-    backendInitialized = true;
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {
@@ -35,10 +31,6 @@ skypeView.addEventListener('did-fail-load', function(event) {
 
     ipcRenderer.send('log', 'Failed to load: ' + JSON.stringify(event));
 });
-
-skypeView.addEventListener('console-message', (e) =>
-    console.log('Guest page logged a message:', e.message)
-);
 
 ipcRenderer.on('main-window-focused', () => {
     skypeView.focus();

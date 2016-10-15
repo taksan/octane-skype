@@ -13,6 +13,7 @@ const addonManager  = require('./addOnManager');
 var initialized   = false;
 var octaneWindow  = null;
 var imageCache    = {};
+
 var OctaneSkype = {
     initialize : function() {
         if (initialized) return;
@@ -53,7 +54,7 @@ var OctaneSkype = {
 
         ipcMain.on('open-with-native-viewer', OctaneSkype.downloadImage);
 
-        addonManager.initializeMainProcess();
+        addonManager.initializeMainProcess(octaneWindow);
 
         initialized = true;
     },

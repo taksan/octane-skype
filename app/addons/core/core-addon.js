@@ -1,9 +1,10 @@
 const electron = require('electron');
 const ipc      = electron.ipcRenderer;
 const url      = require('url');
+const path     = require('path');
+const fs       = require('fs');
+const os       = require('os');
 const whenAvailable = require('octane/utils').whenAvailable;
-const path = require('path');
-const fs   = require('fs');
 const join = require('./join-group-addon').join;
 
 $ = require('jquery');
@@ -12,6 +13,20 @@ const refreshInterval = 300000;
 
 module.exports.addonName = function () {
     return "core-addon";
+};
+
+var reloadedDueToCorruption = false;
+module.exports.initMainProcess = function(octaneWindow) {
+    const ipcMain       = electron.ipcMain;
+    ipcMain.on('reload-skype-due-to-corruption', function(){
+        reloadedDueToCorruption = true;
+        octaneWindow.reload();
+    });
+
+    ipcMain.on('was-reload-skype-due-to-corruption', function(e) {
+        e.sender.send('was-reload-skype-due-to-corruption-response', reloadedDueToCorruption);
+        reloadedDueToCorruption = false;
+    });
 };
 
 var handlersInitialized = false;
@@ -37,6 +52,14 @@ module.exports.initBackend = function (webview, settingsForCore, mainSettings) {
                 break;
         }
     });
+
+    webview.addEventListener('console-message', (e) => {
+        console.log('Guest page logged a message:', e.message);
+        checkCommunicationCorruption(e);
+        var logDir = path.join(os.homedir(),'.octane-skype');
+        fs.mkdirSync(path.join(os.homedir(),'.octane-skype'));
+        fs.appendFile(path.join(logDir,'octane.log'), new Date() + " - " + JSON.stringify(e)+"\n");
+    });
 };
 
 module.exports.initUi = function (addonConfig, settingsClient) {
@@ -46,7 +69,34 @@ module.exports.initUi = function (addonConfig, settingsClient) {
     userStatusWatcher();
     handleShowSettingsIpc();
     configureNotificationUpdates();
+    checkReloadDueToCorruption();
 };
+
+function checkReloadDueToCorruption() {
+    ipc.send('was-reload-skype-due-to-corruption');
+    ipc.on('was-reload-skype-due-to-corruption-response', function(e, wasReloadedDueToCorruption) {
+        if (wasReloadedDueToCorruption) {
+            //alert('Skype was reloaded because communications stopped functioning!');
+            $("body").append(`
+            <div id="corruption-warning" class="warning">
+                <h1>Don't panic! </h1>
+                <h2>Skype was reloaded because communications stopped functioning. 
+                    Should be good now. Click on this warning to dismiss it</h2>
+            </div>`);
+            $("#corruption-warning").click(function() {
+                $(this).remove();
+            })
+        }
+    })
+}
+
+function checkCommunicationCorruption(e) {
+    if (e.level != 2) return;
+    if (e.message == "Failed to load resource: the server responded with a status of 500 (Internal Server Error)") {
+        // somehow, skype state is corrupted and no further communications will take place; alert main process to reload it
+        ipc.send('reload-skype-due-to-corruption');
+    }
+}
 
 function themeLoader(addonConfig) {
     $("head").append("<style type='text/css' id='skype-theme'></style>");
