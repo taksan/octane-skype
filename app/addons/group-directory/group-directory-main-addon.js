@@ -55,16 +55,21 @@ module.exports.initMainProcess = function () {
 
     ipcMain.on('update-group', function(event, groupData) {
         fetchThreadId(groupData.gid).done(function(threadId) {
+            groupData.threadId = threadId;
             dirServerReq({method: 'PUT', path: '/groups/' + threadId}, groupData).done(function (respBody) {
                 event.sender.send('update-group.response', respBody);
             });
         });
     });
 
-    ipcMain.on('exists-in-directory', function(event, gid) {
-        fetchThreadId(gid).done(function(threadId) {
+    ipcMain.on('exists-in-directory', function(event, groupData) {
+        fetchThreadId(groupData.gid).done(function(threadId) {
+            groupData.threadId = threadId;
             dirServerReq({path: '/groups/' + threadId}).done(function (respBody) {
-                event.sender.send("exists-in-directory.response", {success: true, gid: gid, exists: respBody != "{}"});
+                event.sender.send("exists-in-directory.response", {success: true, gid: groupData.gid, exists: respBody != "{}"});
+                dirServerReq({method: 'PUT', path: '/groups/' + threadId}, groupData).done(function (respBody) {
+                    event.sender.send('update-group.response', respBody);
+                });
             }).fail(function(error) {
                 event.sender.send("exists-in-directory.response", {success: false, error: error});
             });

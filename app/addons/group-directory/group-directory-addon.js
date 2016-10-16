@@ -200,7 +200,7 @@ function createDirectoryEntry(entry) {
     return $p;
 }
 
-function gid() {
+function joinId() {
     var $joinLink = $(".settingItem span:contains('join.skype.com'):visible");
     if ($joinLink.size()==0)
         return null;
@@ -208,24 +208,30 @@ function gid() {
     return $joinLink.text().trim().split("/").splice(-1)[0];
 }
 
+function getGroupName() {
+    return $("swx-recent-item a.active .topic").text();
+}
+
+function getJoinLink() {
+    return $(".settingItem span:contains('join.skype.com'):visible");
+}
+
 function whenGroupConfigurationOpensAddDirectoryButton() {
     new MutationObserver(function () {
         if (!isEnabled()) return;
-        var $joinLink = $(".settingItem span:contains('join.skype.com'):visible");
+        var $joinLink = getJoinLink();
         if ($joinLink.size()==0)
             return;
         if ($joinLink.closest(".settingItem").prev().hasClass("directoryControl"))
             return;
 
-        var groupName = $("swx-recent-item a.active .topic").text();
-        var gid = $joinLink.text().trim().split("/").splice(-1)[0];
-        var widgetControl = new DirectoryWidget(gid);
+        var widgetControl = new DirectoryWidget();
 
         $joinLink.closest(".settingItem").prev().after(widgetControl.widget);
 
         var checkState = function() {
             widgetControl.init();
-            ipc.send("exists-in-directory", gid);
+            ipc.send("exists-in-directory", { gid: joinId(), name: getGroupName()});
             ipc.once('exists-in-directory.response', (e, state) => {
                 if (!state.success) {
                     widgetControl.error("Could not fetch group state", checkState);
@@ -237,7 +243,7 @@ function whenGroupConfigurationOpensAddDirectoryButton() {
         checkState();
 
         var publishFn = function () {
-            var json = { gid: gid, name: groupName};
+            var json = { gid: joinId(), name: getGroupName()};
 
             var operation = "add";
             var waitMsg = "Adding...";
@@ -259,12 +265,12 @@ function whenGroupConfigurationOpensAddDirectoryButton() {
     }).observe(document, {subtree: true, childList: true});
 }
 
-function DirectoryWidget(gid)
+function DirectoryWidget()
 {
     var directoryGroupSettingItem = $(`
             <div class="settingItem directoryControl">
                 <span class="fontSize-h4">Publish group in the directory</span>
-                <button role="checkbox" class="toggler" id="control_for_${gid}"><span class="on"></span><span class="off"></span></button>
+                <button role="checkbox" class="toggler" id="control_for_${joinId()}"><span class="on"></span><span class="off"></span></button>
                 <div class="publish-spinner">
                     <swx-loading-animation class="swx-group-spinner spinner small blue">
                         <span class="spinner-label">Checking</span>
@@ -358,10 +364,10 @@ function whenGroupNameChangesSendUpdate() {
                 console.log(mutations);
                 if (!isEnabled()) return;
                 if (mutations[0].type != "characterData") return;
-                if (gid() == null) return;
+                if (joinId() == null) return;
 
-                console.log(" update-group " + gid() + " - new name" + mutations[0].target.nodeValue);
-                ipc.send("update-group", {gid: gid(), name: mutations[0].target.nodeValue});
+                console.log(" update-group " + joinId() + " - new name" + mutations[0].target.nodeValue);
+                ipc.send("update-group", {gid: joinId(), name: mutations[0].target.nodeValue});
             }).observe(activeSpan, {subtree: true, characterData: true});
         }).observe(swxNavigation, {subtree: true, childList: true});
     });
