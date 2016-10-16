@@ -222,6 +222,10 @@ function whenGroupConfigurationOpensAddDirectoryButton() {
         var $joinLink = getJoinLink();
         if ($joinLink.size()==0)
             return;
+
+        if ($("#joinViaLink").size() == 0)
+            return;
+
         if ($joinLink.closest(".settingItem").prev().hasClass("directoryControl"))
             return;
 
