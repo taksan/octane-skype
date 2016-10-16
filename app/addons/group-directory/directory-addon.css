@@ -78,6 +78,34 @@
     width: 100% !important;
 }
 
+.publish-spinner {
+    width:  0;
+    height: 0;
+    position: relative;
+    right: 1em;
+    margin-bottom: 0;
+    margin-top: -.1em !important;
+}
+
+.publish-message {
+    position: relative;
+    margin-top: -.1em !important;
+    margin-bottom: -.3em !important;
+    color: #ff8c00;
+    white-space: nowrap;
+    top: 0 !important;
+    cursor: pointer;
+}
+
+.publish-message .reload {
+    font-size: 1.5em !important;
+    margin-bottom: -1em;
+    vertical-align: -webkit-baseline-middle !important;
+    margin-left: 1em;
+    color: #ff8c00;
+    font-weight: bold;
+}
+
 .swx-group-spinner {
     width:   1em   !important;
     height:  1em   !important;;

@@ -115,7 +115,7 @@ function handleGroupPopulateResults() {
     if (localStorage.directoryContents)
         directoryContents = JSON.parse(localStorage.directoryContents);
 
-    ipc.on('fetch-group-list-response', function (evt, data) {
+    ipc.on('fetch-group-list.response', function (evt, data) {
         refreshWebSocketConnection();
         setOnlineState();
 
@@ -124,7 +124,7 @@ function handleGroupPopulateResults() {
         renderDirectoryContents(directoryContents);
     });
 
-    ipc.on('fetch-group-list-error-response', function (evt, error) {
+    ipc.on('fetch-group-list.error', function (evt, error) {
         var reason = "";
         if (error.code == "ECONNREFUSED") reason = " (connection refused)";
         setOfflineState(reason);
@@ -219,47 +219,125 @@ function whenGroupConfigurationOpensAddDirectoryButton() {
 
         var groupName = $("swx-recent-item a.active .topic").text();
         var gid = $joinLink.text().trim().split("/").splice(-1)[0];
+        var widgetControl = new DirectoryWidget(gid);
 
-        var directoryGroupSettingItem = $(`
+        $joinLink.closest(".settingItem").prev().after(widgetControl.widget);
+
+        var checkState = function() {
+            widgetControl.init();
+            ipc.send("exists-in-directory", gid);
+            ipc.once('exists-in-directory.response', (e, state) => {
+                if (!state.success) {
+                    widgetControl.error("Could not fetch group state", checkState);
+                    return;
+                }
+                widgetControl.setChecked(state.exists);
+            });
+        };
+        checkState();
+
+        var publishFn = function () {
+            var json = { gid: gid, name: groupName};
+
+            var operation = "add";
+            var waitMsg = "Adding...";
+            var finalState = true;
+            if (widgetControl.isChecked()) {
+                operation = "remove";
+                waitMsg = "Removing...";
+                finalState = false;
+            }
+
+            widgetControl.startSpinner(waitMsg);
+            groupOp(operation, json).done(function () {
+                widgetControl.setChecked(finalState);
+            }).fail(function(error) {
+                widgetControl.error("Failed to " + operation + ": " + error, publishFn);
+            });
+        };
+        widgetControl.click(publishFn);
+    }).observe(document, {subtree: true, childList: true});
+}
+
+function DirectoryWidget(gid)
+{
+    var directoryGroupSettingItem = $(`
             <div class="settingItem directoryControl">
-                <span class="fontSize-h4">Make group available in the directory</span>
+                <span class="fontSize-h4">Publish group in the directory</span>
                 <button role="checkbox" class="toggler" id="control_for_${gid}"><span class="on"></span><span class="off"></span></button>
-                <swx-loading-animation class="swx-group-spinner spinner small blue">
-                    <span>Checking</span>
-                    <div class="circle one"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
-                    <div class="circle two"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
-                    <div class="circle three"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
-                    <div class="circle four"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
-                </swx-loading-animation>
+                <div class="publish-spinner">
+                    <swx-loading-animation class="swx-group-spinner spinner small blue">
+                        <span class="spinner-label">Checking</span>
+                        <div class="circle one"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
+                        <div class="circle two"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
+                        <div class="circle three"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
+                        <div class="circle four"> <div class="rotate"> <div class="position"> <div class="scale"> <div class="shape"></div> </div> </div> </div> </div>
+                    </swx-loading-animation>
+                </div>
+                <div class="publish-message fontSize-p" title="Retry">
+                    <span class="iconfont reload"></span><span class="failure-message">Failed</span>
+                </div>
             </div>
             `);
 
-        directoryGroupSettingItem.find("button").hide();
+    var publishButton = directoryGroupSettingItem.find("button");
+    var spinner = publishButton.next();
+    var messageArea = spinner.next();
 
-        $joinLink.closest(".settingItem").prev().after(directoryGroupSettingItem);
-        ipc.send("exists-in-directory", gid);
+    this.widget = directoryGroupSettingItem;
+    this.click = function(callback) {
+        publishButton.click(callback);
+    };
 
-        directoryGroupSettingItem.find("button").click(function () {
-            var json = {
-                gid: gid,
-                name: groupName
-            };
-            if (!$(this).hasClass("checked")){
-                ipc.send('add-group', json);
-                $(this).addClass("checked");
-            }
-            else {
-                ipc.send('remove-group', json);
-                $(this).removeClass("checked");
-            }
-        });
-    }).observe(document, {subtree: true, childList: true});
-    ipc.on('group-exists', function (e, state) {
-        if (state.exists)
-            $("#control_for_"+state.gid).addClass("checked");
-        $("#control_for_"+state.gid).show();
-        $("#control_for_"+state.gid).next().remove();
+    var self = this;
+    this.init = function() {
+        spinner.css("right","1em");
+        publishButton.hide();
+        self.startSpinner("Checking");
+    };
+
+    this.startSpinner = function(message) {
+        messageArea.hide();
+        spinner.show();
+        spinner.find(".spinner-label").html(message);
+    };
+
+    this.error = function(message, retry) {
+        spinner.hide();
+        publishButton.hide();
+        spinner.css("right","1em");
+        messageArea.find(".failure-message").html(message);
+        messageArea.one("click", retry);
+        messageArea.show();
+    };
+
+    this.setChecked = function (state) {
+        spinner.css("right","-2em");
+        spinner.hide();
+        publishButton.show();
+        if (state)
+            publishButton.addClass("checked");
+        else
+            publishButton.removeClass("checked");
+    };
+
+    this.isChecked = function () {
+        return publishButton.hasClass("checked")
+    }
+}
+
+function groupOp(op, json)
+{
+    var deferred = $.Deferred();
+    ipc.send(op+'-group', json);
+    ipc.once(op+'-group.response',  (e, state) => {
+        if (!deferred) return;
+        if (state.success)
+            deferred.resolve();
+        else
+            deferred.reject(state.error);
     });
+    return deferred.promise();
 }
 
 function whenGroupNameChangesSendUpdate() {

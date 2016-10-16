@@ -14,34 +14,49 @@ module.exports.initMainProcess = function () {
     ipcMain.on('fetch-group-list', function(event) {
         dirServerReq()
             .done(function(respBody) {
-                event.sender.send('fetch-group-list-response', respBody);
+                event.sender.send('fetch-group-list.response', respBody);
             })
             .fail(function(error, response) {
-                event.sender.send('fetch-group-list-error-response', error, response);
+                event.sender.send('fetch-group-list.error', error, response);
             });
     });
 
     ipcMain.on('add-group', function(event, groupData) {
         fetchThreadId(groupData.gid).done(function(threadId) {
             groupData.threadId = threadId;
-            dirServerReq({method: 'POST'}, groupData).done(function (respBody) {
-                event.sender.send('group-added', respBody);
-            });
+            dirServerReq({method: 'POST'}, groupData)
+                .done(function (respBody) {
+                    event.sender.send('add-group.response', {success: true, data: respBody});
+                })
+                .fail(function(error, response) {
+                    var errorMsg = "";
+                    if (error.code == 'ECONNREFUSED')
+                        errorMsg = "Connection refused";
+                    event.sender.send('add-group.response', {success: false, error: errorMsg});
+                });
         })
     });
 
     ipcMain.on('remove-group', function(event, groupData) {
         fetchThreadId(groupData.gid).done(function(threadId) {
-            dirServerReq({method:'DELETE', path:'/groups/'+threadId}).done(function(respBody) {
-                event.sender.send('group-removed', respBody);
-            });
+            dirServerReq({method:'DELETE', path:'/groups/'+threadId})
+                .done(function(respBody) {
+                    event.sender.send('remove-group.response', {success: true, data: respBody});
+                })
+                .fail(function(error, response) {
+                    var errorMsg = "";
+                    if (error.code == 'ECONNREFUSED')
+                        errorMsg = "Connection refused";
+                    event.sender.send('remove-group.response', {success: false, error: errorMsg});
+                });
+
         });
     });
 
     ipcMain.on('update-group', function(event, groupData) {
         fetchThreadId(groupData.gid).done(function(threadId) {
             dirServerReq({method: 'PUT', path: '/groups/' + threadId}, groupData).done(function (respBody) {
-                event.sender.send('group-updated', respBody);
+                event.sender.send('update-group.response', respBody);
             });
         });
     });
@@ -49,7 +64,9 @@ module.exports.initMainProcess = function () {
     ipcMain.on('exists-in-directory', function(event, gid) {
         fetchThreadId(gid).done(function(threadId) {
             dirServerReq({path: '/groups/' + threadId}).done(function (respBody) {
-                event.sender.send("group-exists", {gid: gid, exists: respBody != "{}"});
+                event.sender.send("exists-in-directory.response", {success: true, gid: gid, exists: respBody != "{}"});
+            }).fail(function(error) {
+                event.sender.send("exists-in-directory.response", {success: false, error: error});
             });
         });
     });
@@ -68,6 +85,7 @@ function fetchThreadId(gid) {
             'document.getElementById("nativeSkypeLauncherFrame").src',
             function (r) {
                 var threadId = r.replace(/^.*threadId=/,"").replace(/@thread.skype&session_.*/,"");
+                if (threadId.length == 0) return;
                 $deferred.resolve(threadId);
                 tmpWindow.destroy();
             })
