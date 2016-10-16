@@ -56,9 +56,11 @@ module.exports.initBackend = function (webview, settingsForCore, mainSettings) {
     webview.addEventListener('console-message', (e) => {
         console.log('Guest page logged a message:', e.message);
         checkCommunicationCorruption(e);
-        var logDir = path.join(os.homedir(),'.octane-skype');
-        fs.mkdirSync(path.join(os.homedir(),'.octane-skype'));
-        fs.appendFile(path.join(logDir,'octane.log'), new Date() + " - " + JSON.stringify(e)+"\n");
+        var homeConfigDir = path.join(os.homedir(),'.octane-skype');
+        if (!fs.existsSync(homeConfigDir))
+            fs.mkdirSync(homeConfigDir);
+
+        fs.appendFile(path.join(homeConfigDir,'octane.log'), new Date() + " - " + JSON.stringify(e)+"\n");
     });
 };
 
