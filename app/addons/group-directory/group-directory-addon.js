@@ -223,7 +223,8 @@ function whenGroupConfigurationOpensAddDirectoryButton() {
         if ($joinLink.size()==0)
             return;
 
-        if ($("#joinViaLink").size() == 0)
+        var $joinViaLink = $("#joinViaLink");
+        if ($joinViaLink.size() == 0)
             return;
 
         if ($joinLink.closest(".settingItem").prev().hasClass("directoryControl"))
@@ -232,6 +233,21 @@ function whenGroupConfigurationOpensAddDirectoryButton() {
         var widgetControl = new DirectoryWidget();
 
         $joinLink.closest(".settingItem").prev().after(widgetControl.widget);
+        var joinLinkButton = $joinViaLink.next();
+
+        var cachedGid = joinId();
+
+        new MutationObserver(function(mutations) {
+            mutations.forEach(function(record) {
+                if (record.attributeName != "aria-checked") return;
+                if (joinLinkButton.attr("aria-checked") === "false") {
+                    widgetControl.deactivate();
+                    groupOp("remove", { gid: cachedGid, name: getGroupName()})
+                }
+                else
+                    widgetControl.reactivate();
+            });
+        }).observe(joinLinkButton[0], {attributes: true})
 
         var checkState = function() {
             widgetControl.init();
@@ -333,6 +349,15 @@ function DirectoryWidget()
 
     this.isChecked = function () {
         return publishButton.hasClass("checked")
+    };
+
+    this.deactivate = function () {
+        publishButton.removeClass("checked");
+        directoryGroupSettingItem.hide();
+    };
+
+    this.reactivate = function () {
+        directoryGroupSettingItem.show();
     }
 }
 
