@@ -28,7 +28,12 @@ module.exports.forAddon = function(addon) {
             return target.addons[addon][name];
         },
         set: function(target, name, value){
-            var res = ipc.sendSync("settings-update", addon, name, value);
+            var res;
+            if (ipc) // renderer
+                res = ipc.sendSync("settings-update", addon, name, value);
+            else     // main
+                res = require('./settings').settingsUpdate(addon, name, value);
+
             if (!res.success)
                 throw new Error(res.message);
 

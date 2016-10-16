@@ -102,6 +102,7 @@ module.exports = {
         }
 
         module.exports.saveConfiguration();
+        return {success:true};
     }
 };
 ipcMain.on("settings-update", (e, addon, configKey, value)=>{
