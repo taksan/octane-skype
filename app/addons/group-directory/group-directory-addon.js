@@ -247,7 +247,7 @@ function whenGroupConfigurationOpensAddDirectoryButton() {
                 else
                     widgetControl.reactivate();
             });
-        }).observe(joinLinkButton[0], {attributes: true})
+        }).observe(joinLinkButton[0], {attributes: true});
 
         var checkState = function() {
             widgetControl.init();
@@ -413,17 +413,29 @@ function closeWebSocketConnection()
     ipc.sendToHost("close-web-socket-connection");
 }
 
+var backOff=1;
 function setOfflineState(reason) {
-    var $directory = $(".directory-link-state .iconfont");
+    var $directory = $(".directory-link-state .iconfont:visible");
+    if ($directory.size() == 0) {
+        console.log("offline, but directory not visible");
+        return;
+    }
     $directory.removeClass("link").addClass("linkBroken");
     var errorMessage = "Offline";
     if (reason)
         errorMessage+="(" + reason + ")";
 
     $(".directory-link-state").prop("title", errorMessage);
+
+    setTimeout(function() {
+        fetchDirectoryContents();
+    }, Math.min(1000 * backOff, 60000));
+
+    backOff = backOff * 1.5;
 }
 
 function setOnlineState() {
+    backOff = 1;
     $(".directory-link-state .iconfont").removeClass("linkBroken").addClass("link");
     $(".directory-link-state").prop("title", "Directory online");
 }
