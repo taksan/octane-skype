@@ -10,7 +10,9 @@ module.exports.addonName = function () {
     return "group-directory-main";
 };
 
+var gid2tidCache;
 module.exports.initMainProcess = function () {
+    gid2tidCache = new Git2TidCache();
     ipcMain.on('fetch-group-list', function(event) {
         dirServerReq()
             .done(function(respBody) {
@@ -49,7 +51,6 @@ module.exports.initMainProcess = function () {
                         errorMsg = "Connection refused";
                     event.sender.send('remove-group.response', {success: false, error: errorMsg});
                 });
-
         });
     });
 
@@ -80,6 +81,12 @@ module.exports.initMainProcess = function () {
 function fetchThreadId(gid) {
     var $deferred = Deferred();
 
+    var tid = gid2tidCache.get(gid);
+    if (tid) {
+        $deferred.resolve(tid);
+        return $deferred.promise()
+    }
+
     var url = "https://join.skype.com/"+gid;
     const BrowserWindow = electron.BrowserWindow;
     let tmpWindow = new BrowserWindow({ show: false});
@@ -92,6 +99,8 @@ function fetchThreadId(gid) {
                 var threadId = r.replace(/^.*threadId=/,"").replace(/@thread.skype&session_.*/,"");
                 if (threadId.length == 0) return;
                 $deferred.resolve(threadId);
+
+                gid2tidCache.put(gid, threadId);
                 tmpWindow.destroy();
             })
     });
@@ -126,4 +135,23 @@ function dirServerReq(extra, json) {
         }
     });
     return $deferred.promise();
+}
+
+function Git2TidCache() {
+    const fs = require('fs');
+    const path = require('path');
+
+    var gid2tidCache = {};
+    var cacheFile = path.join(electron.app.getPath('userData'), 'gid2tid.json');
+    if (fs.existsSync(cacheFile))
+        gid2tidCache = JSON.parse(fs.readFileSync(cacheFile));
+
+    this.get = function (gid) {
+        return gid2tidCache[gid];
+    };
+
+    this.put = function(gid, tid) {
+        gid2tidCache[gid] = tid;
+        fs.writeFile(cacheFile, JSON.stringify(gid2tidCache, null, "  "));
+    }
 }
