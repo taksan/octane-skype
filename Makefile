@@ -25,6 +25,6 @@ test-build:
 
 push: # transfer source package to ppa
 	echo "Transfer files to ppa"
-	cd release-stage; \
-	dput ppa:g-takeuchi/octane-skype *_source.changes; \
-	cp src-release/debian/changelog ../debian/
+	cd release-stage/wily && dput ppa:g-takeuchi/octane-skype *_source.changes; 
+	cd release-stage/xenial && dput ppa:g-takeuchi/octane-skype *_source.changes; 
+	cp release-stage/src-release/debian/changelog ../debian/

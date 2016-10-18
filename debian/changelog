@@ -1,3 +1,19 @@
+octane-skype (1.0.26-1ubuntu1~xenial) xenial; urgency=low
+
+  * Workaround for communication issues, where skype fails to communicate with cloud.
+  * Logging in the $home/.octane-skype
+  * Introducing Skype Directory
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Mon, 17 Oct 2016 23:01:23 -0200
+
+octane-skype (1.0.25-1ubuntu1~wily) wily; urgency=low
+
+  * Workaround for communication issues, where skype fails to communicate with cloud.
+  * Logging in the $home/.octane-skype
+  * Introducing Skype Directory
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Mon, 17 Oct 2016 23:01:22 -0200
+
 octane-skype (1.0.24-1ubuntu1) xenial; urgency=high
 
   * knockout was shipped by mistake (xenial version)
