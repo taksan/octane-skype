@@ -106,6 +106,10 @@
     font-weight: bold;
 }
 
+.reload-button {
+    cursor: pointer;
+}
+
 .swx-group-spinner {
     width:   1em   !important;
     height:  1em   !important;;
