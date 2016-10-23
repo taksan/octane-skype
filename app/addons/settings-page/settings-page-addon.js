@@ -83,9 +83,9 @@ function addAddOnPreferences($addonUl, addon) {
             console.error("Preference of type " + definition.type + " was not recognized");
             return;
         }
-        var component = info.makeHtml(addon.name, definition);
-        $addonUl.append($(component));
-        typeInfo[definition.type].addChangeHandler(addon, definition.name);
+        var $component = $(info.makeHtml(addon.name, definition));
+        $addonUl.append($component);
+        typeInfo[definition.type].addChangeHandler($component, addon, definition.name);
     });
     return definitionCount;
 }
@@ -111,16 +111,17 @@ const typeInfo = {
                         <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>                
                     </li>`
         },
-        addChangeHandler: function(addon, defName) {
-            $("#" + addon.name+"_" + defName).click(function(){
-                var newState = !$(this).hasClass("ToggleButton--checked");
+        addChangeHandler: function($component, addon, defName) {
+            $component.click(function(){
+                var $toggleButton = $(this).find("button");
+                var newState = !$toggleButton.hasClass("ToggleButton--checked");
                 if (!addon.update(defName, newState))
                     newState = !newState;
 
                 if (newState)
-                    $(this).addClass("ToggleButton--checked");
+                    $toggleButton.addClass("ToggleButton--checked");
                 else
-                    $(this).removeClass("ToggleButton--checked");
+                    $toggleButton.removeClass("ToggleButton--checked");
             });
         }
     },
@@ -146,9 +147,9 @@ const typeInfo = {
                         <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>
                     </li>`
         },
-        addChangeHandler: function(addon, defName) {
-            $("#" + addon.name+"_" + defName).change(function () {
-                var value = $("#" + addon.name+"_" + defName).val();
+        addChangeHandler: function($component, addon, defName) {
+            $component.change(function () {
+                var value = $component.find("select").val();
                 addon.update(defName, value);
             });
         }
@@ -166,9 +167,9 @@ const typeInfo = {
                         <p class="pref-toggle-sec-text UserSettingsPage-secondaryText">${definition.description}</p>
                     </li>`
         },
-        addChangeHandler: function(addon, defName) {
-            $("#" + addon.name+"_" + defName).change(function () {
-                var value = $(this).val();
+        addChangeHandler: function($component, addon, defName) {
+            $component.change(function () {
+                var value = $(this).find("input").val();
                 addon.update(defName, value);
             });
         }

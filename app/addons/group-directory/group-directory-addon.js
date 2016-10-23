@@ -416,10 +416,7 @@ function closeWebSocketConnection()
 var backOff=1;
 function setOfflineState(reason) {
     var $directory = $(".directory-link-state .iconfont:visible");
-    if ($directory.size() == 0) {
-        console.log("offline, but directory not visible");
-        return;
-    }
+
     $directory.removeClass("link").addClass("linkBroken");
     var errorMessage = "Offline";
     if (reason)
@@ -428,6 +425,8 @@ function setOfflineState(reason) {
     $(".directory-link-state").prop("title", errorMessage);
 
     setTimeout(function() {
+        if (!rightPane().isVisible())
+            return;
         fetchDirectoryContents();
     }, Math.min(1000 * backOff, 60000));
 
