@@ -29,6 +29,8 @@ $CHANGES
  -- Gabriel Takeuchi <g.takeuchi@gmail.com>  $(date -R)
 " | cat - ../../debian/changelog > debian/changelog
 
+    cp debian/changelog ../../debian/changelog
+
     version=$(cat debian/changelog|head -1|sed 's/.*(\(.*\)-1.*/\1/')
     echo $version
     make clean 
@@ -44,6 +46,7 @@ $CHANGES
     mv octane*.tar.xz *.dsc *_source.changes $SERIES
 }
 
+git checkout debian/changelog
 
 mkdir -p release-stage 
 cd release-stage

@@ -9,7 +9,7 @@ module.exports.addonName = function () {
 var webSocket;
 var skypeWebView;
 
-module.exports.initBackend = function (webview) {
+module.exports.initHostRenderer = function (webview) {
     injectCss(webview);
 
     if (skypeWebView) return;

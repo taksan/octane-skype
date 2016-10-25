@@ -10,7 +10,7 @@ settingsClient.initialize(JSON.stringify(octaneApp.settings()));
 
 addOns.initialize(skypeView, octaneApp);
 skypeView.addEventListener('did-navigate', () => {
-    addOns.initBackend(skypeView, settingsClient);
+    addOns.initHostRenderer(skypeView, settingsClient);
 });
 
 skypeView.addEventListener('did-stop-loading', (e) => {

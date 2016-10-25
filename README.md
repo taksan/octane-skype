@@ -40,6 +40,12 @@ deb http://ppa.launchpad.net/g-takeuchi/octane-skype/ubuntu wily main
 deb-src http://ppa.launchpad.net/g-takeuchi/octane-skype/ubuntu wily main 
 ```
 
+And before doing apt-get, you need to add the key:
+
+```
+gpg --keyserver keyserver.ubuntu.com --recv-keys FFE10208
+```
+
 # User Guide
 
 ## Keyboard shortcuts

@@ -41,7 +41,7 @@ module.exports.getPreferences = function() {
     ];
 };
 
-module.exports.initBackend = function (webview) {
+module.exports.initHostRenderer = function (webview) {
     var defaultCssFile = path.join(__dirname, "highlight-default.css");
     webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
 };

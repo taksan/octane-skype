@@ -11,7 +11,7 @@ module.exports.addonName = function() {
     return "search-addon";
 };
 
-module.exports.initBackend = function (webview) {
+module.exports.initHostRenderer = function (webview) {
     const fs     = require('fs');
     const path   = require('path');
 

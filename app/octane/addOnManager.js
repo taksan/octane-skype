@@ -30,11 +30,11 @@ module.exports.initializeMainProcess = function (octaneWindow) {
     }
 };
 
-module.exports.initBackend = function(webview, settingsClient) {
+module.exports.initHostRenderer = function(webview, settingsClient) {
     for (var addonFile in addOns) {
         var addon = addOns[addonFile];
-        if (addon.initBackend)
-            addon.initBackend(webview, settingsClient.forAddon(addon.addonName()), settingsClient.forAddon("main"));
+        if (addon.initHostRenderer)
+            addon.initHostRenderer(webview, settingsClient.forAddon(addon.addonName()), settingsClient.forAddon("main"));
     }
 };
 

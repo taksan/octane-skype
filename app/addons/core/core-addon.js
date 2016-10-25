@@ -1,13 +1,13 @@
 const electron = require('electron');
-const ipc      = electron.ipcRenderer;
 const url      = require('url');
 const path     = require('path');
 const fs       = require('fs');
 const os       = require('os');
+const $        = require('jquery');
+
+const ipc      = electron.ipcRenderer;
 const whenAvailable = require('octane/utils').whenAvailable;
 const join = require('./join-group-addon').join;
-
-$ = require('jquery');
 
 const refreshInterval = 300000;
 
@@ -17,7 +17,7 @@ module.exports.addonName = function () {
 
 var reloadedDueToCorruption = false;
 module.exports.initMainProcess = function(octaneWindow) {
-    const ipcMain       = electron.ipcMain;
+    const ipcMain = electron.ipcMain;
     ipcMain.on('reload-skype-due-to-corruption', function(){
         reloadedDueToCorruption = true;
         octaneWindow.reload();
@@ -30,7 +30,7 @@ module.exports.initMainProcess = function(octaneWindow) {
 };
 
 var handlersInitialized = false;
-module.exports.initBackend = function (webview, settingsForCore, mainSettings) {
+module.exports.initHostRenderer = function (webview, settingsForCore, mainSettings) {
     var defaultCssFile = path.join(__dirname, "image-viewer.css");
     webview.insertCSS(fs.readFileSync(defaultCssFile, 'utf8'));
 
@@ -78,7 +78,6 @@ function checkReloadDueToCorruption() {
     ipc.send('was-reload-skype-due-to-corruption');
     ipc.on('was-reload-skype-due-to-corruption-response', function(e, wasReloadedDueToCorruption) {
         if (wasReloadedDueToCorruption) {
-            //alert('Skype was reloaded because communications stopped functioning!');
             $("body").append(`
             <div id="corruption-warning" class="warning">
                 <h1>Don't panic! </h1>
@@ -139,8 +138,10 @@ function keepAlive() {
     var isIdle = true;
 
     function refreshIfIdle() {
-        if (isIdle)
+        if (isIdle) {
+            console.log("refreshIfIdle...");
             window.location = window.location;
+        }
         isIdle = false;
     }
 
@@ -151,10 +152,9 @@ function keepAlive() {
         clearInterval(idleRefresh);
         idleRefresh = setInterval(refreshIfIdle, refreshInterval);
     });
-
 }
 
-var imgfull, justClicked = false;
+var imgFull, justClicked = false;
 function handleLinks(config) {
     whenAvailable(".chatContainer").done(function() {
         document.querySelector(".chatContainer").addEventListener('click', function(event) {
@@ -179,8 +179,8 @@ function handleLinks(config) {
 
         document.addEventListener('keyup', function(e) {
             if (e.code == "Escape") {
-                if (imgfull && imgfull.is(":visible")) {
-                    imgfull.hide();
+                if (imgFull && imgFull.is(":visible")) {
+                    imgFull.hide();
                 }
             }
         });
@@ -188,23 +188,22 @@ function handleLinks(config) {
 }
 
 function openImageInside(imgLink) {
-    //electron.shell.openExternal(imgLink);
     justClicked = true;
-    if (!imgfull) {
-        imgfull = $(`<img class="modal-content" id="img01" src="${imgLink}">`);
-        $(".mainStage").append(imgfull);
+    if (!imgFull) {
+        imgFull = $(`<img class="modal-content" id="img01" src="${imgLink}">`);
+        $(".mainStage").append(imgFull);
         document.addEventListener("click", function(e) {
-            if (!justClicked && imgfull.is(":visible"))
-                imgfull.hide();
+            if (!justClicked && imgFull.is(":visible"))
+                imgFull.hide();
             justClicked = false;
         });
     }
     else {
-        imgfull.hide();
-        imgfull.prop("src", imgLink);
+        imgFull.hide();
+        imgFull.prop("src", imgLink);
     }
 
-    imgfull.show();
+    imgFull.show();
 }
 
 function userStatusWatcher() {

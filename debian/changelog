@@ -1,3 +1,15 @@
+octane-skype (1.0.28-1ubuntu1~xenial) xenial; urgency=low
+  
+  * Fixing bug where the group pane reopens automatically
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Tue, 18 Oct 2016 07:31:07 -0200
+
+octane-skype (1.0.27-1ubuntu1~wily) wily; urgency=low
+  
+  * Fixing bug where the group pane reopens automatically
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Tue, 18 Oct 2016 07:31:06 -0200
+
 octane-skype (1.0.26-1ubuntu1~xenial) xenial; urgency=low
 
   * Workaround for communication issues, where skype fails to communicate with cloud.

@@ -21,7 +21,7 @@ ipc.on('main-window-loaded', function (event, addOnList, settingsJson) {
     if (mainWindowLoadedInitialized) return;
     mainWindowLoadedInitialized = true;
 
-    const settingsClient = require("./../octane/settings-client");
+    const settingsClient = require("octane/settings-client");
     settingsClient.initialize(settingsJson);
 
     const whenAvailable = require('octane/utils').whenAvailable;
