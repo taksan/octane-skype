@@ -12,8 +12,12 @@ window.focus = function() {
 
 ipc.on('main-window-focused', function () {
     // focus message textarea whenever the window comes up
-    if (window.document.querySelector("textarea"))
+    if (window.document.querySelector("textarea")) {
         window.document.querySelector("textarea").focus();
+    }
+    else {
+        console.log("NOTHING TO FOCUS");
+    }
 });
 
 var mainWindowLoadedInitialized = false;

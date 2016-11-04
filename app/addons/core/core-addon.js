@@ -65,6 +65,7 @@ module.exports.initHostRenderer = function (webview, settingsForCore, mainSettin
 };
 
 module.exports.initUi = function (addonConfig, settingsClient) {
+    watchConnection();
     themeLoader(settingsClient.forAddon("main"));
     keepAlive();
     handleLinks(settingsClient.forAddon("main"))
@@ -73,6 +74,37 @@ module.exports.initUi = function (addonConfig, settingsClient) {
     configureNotificationUpdates();
     checkReloadDueToCorruption();
 };
+
+function watchConnection() {
+    var badConnection = false;
+    // KEEP WATCHING FOR ENDPOINT ERRORS.. if not working, skype is not communicating
+    (function(open) {
+        XMLHttpRequest.prototype.open = function() {
+            var skypeEndpointGateway = "https://client-s.gateway.messenger.live.com/";
+            var requestUrl = arguments[1];
+            this.addEventListener("readystatechange", function(event) {
+                if(this.readyState == 4 && this.status == 200 && requestUrl.indexOf(skypeEndpointGateway)!=-1){
+                    if (badConnection) {
+                        console.log("Communication restored");
+                        ipc.send('communication-restored');
+                    }
+                    badConnection = false;
+                }
+            }, false);
+
+            this.addEventListener("error", function(event) {
+                if (badConnection) return;
+                if (requestUrl.indexOf(skypeEndpointGateway) != -1) {
+                    console.error("Communication failure, unable to send/update messages");
+                    badConnection = true;
+                    ipc.send('communication-broken');
+                }
+            });
+
+            open.apply(this, arguments);
+        };
+    })(XMLHttpRequest.prototype.open);
+}
 
 function checkReloadDueToCorruption() {
     ipc.send('was-reload-skype-due-to-corruption');

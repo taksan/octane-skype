@@ -25,6 +25,8 @@ exports.initialize = function(instance) {
     trayIcon.setContextMenu(contextMenu);
     ipcMain.on("unseen-chat-changed", (e,count) => exports.setNotificationCount(count));
     ipcMain.on("state-changed", (e,state) =>exports.updateState(state));
+    ipcMain.on("communication-broken", (e) => drawBrokenComm());
+    ipcMain.on("communication-restored", (e) => clearBrokenComm());
 };
 
 exports.setNotificationCount = function(count) {
@@ -41,39 +43,56 @@ exports.updateState = function (state) {
     drawTrayIcon(lastCount);
 };
 
-function drawTrayIcon(count)
-{
+function drawTrayWithGivenTextAndStyle(txt, fgColor, bubbleBgColor, fontWeight, fontSizeOverride, bubbleTextYPosOverride) {
     var canvas = new Canvas(24, 24);
     var ctx = canvas.getContext('2d');
-
     ctx.drawImage(logo, 0, 0, logo.width, logo.height);
-    if (count != 0)
-        drawTrayIconMessageCount(ctx, count);
+
+    if (txt != null) {
+        var fontSize = fontSizeOverride ? fontSizeOverride : 9;
+        var yPos = bubbleTextYPosOverride ? bubbleTextYPosOverride : 9;
+        ctx.beginPath();
+        ctx.arc(18, 6, 6, 0, 2 * Math.PI, false);
+        ctx.fillStyle = bubbleBgColor;
+        ctx.fill();
+        ctx.strokeStyle = '#ffb31a';
+        ctx.stroke();
+        ctx.font = fontWeight + fontSize + 'px Verdana';
+        ctx.fillStyle = fgColor;
+        var tsize = ctx.measureText(txt).width;
+        ctx.fillText(txt, 18 - tsize / 2, yPos);
+    }
 
     var data = canvas.toDataURL('image/png');
     trayIcon.setImage(nativeImage.createFromDataURL(data));
 }
-
-function drawTrayIconMessageCount(ctx, count)
+function drawBrokenComm()
 {
-    var fontSize = 8;
-    var yPos = 9;
+    drawTrayWithGivenTextAndStyle("\u2757", 'white', 'red', "bold ");
+}
+
+function clearBrokenComm() {
+    drawTrayIcon(lastCount);
+}
+
+function drawTrayIcon(count)
+{
+    var txt = null;
+    var fontSize = 9;
+    var bubbleTextYPos = 9;
+
+    if (count > 0)
+        txt = count;
+
+    if (count >= 10) fontSize = 8;
+
     if (count > 99) {
-        count = "∞";
-        fontSize = 16;
-        yPos = 11;
+        fontSize = 12;
+        bubbleTextYPos = 10;
+        txt = "∞";
     }
 
-    ctx.beginPath();
-    ctx.arc(18, 6, 6, 0, 2 * Math.PI, false);
-    ctx.fillStyle= 'yellow';
-    ctx.fill();
-    ctx.strokeStyle='#ffb31a';
-    ctx.stroke();
-    ctx.font = fontSize+'px Colibri';
-    ctx.fillStyle = 'black';
-    var tsize = ctx.measureText(count).width;
-    ctx.fillText(count, 18-tsize/2, yPos);
+    drawTrayWithGivenTextAndStyle(txt, "black", "yellow", "", fontSize, bubbleTextYPos);
 }
 
 let contextMenu = new electron.Menu.buildFromTemplate([
