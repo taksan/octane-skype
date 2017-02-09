@@ -1,3 +1,15 @@
+octane-skype (1.0.30-1ubuntu1~xenial) xenial; urgency=low
+  
+  * Added monitor to watch for communication failures, so we can at least warn the user
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Mon, 07 Nov 2016 10:35:47 -0200
+
+octane-skype (1.0.29-1ubuntu1~wily) wily; urgency=low
+  
+  * Added monitor to watch for communication failures, so we can at least warn the user
+
+ -- Gabriel Takeuchi <g.takeuchi@gmail.com>  Mon, 07 Nov 2016 10:35:45 -0200
+
 octane-skype (1.0.28-1ubuntu1~xenial) xenial; urgency=low
   
   * Fixing bug where the group pane reopens automatically
